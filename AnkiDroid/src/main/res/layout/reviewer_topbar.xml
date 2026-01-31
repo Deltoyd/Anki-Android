@@ -45,6 +45,19 @@
             />
 
         <com.ichi2.ui.FixedTextView
+            android:id="@+id/combo_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/review_number"
+            android:paddingStart="12dp"
+            android:text=""
+            android:textColor="@color/ikasi_streak_fire"
+            android:textSize="14sp"
+            android:visibility="gone"
+            tools:text="🔥×3"
+            />
+
+        <com.ichi2.ui.FixedTextView
             android:id="@+id/chosen_answer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

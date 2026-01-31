@@ -149,5 +149,20 @@
     <color name="idle_divider_color">#C7C7C7</color>
     <color name="drag_divider_color">#1A90FF</color>
     <color name="divider_handle_color">#4D4D4D</color>
+
+    <!-- IKASI Museum Palette -->
+    <color name="ikasi_bg">#FFF8F0</color>
+    <color name="ikasi_text">#1A1410</color>
+    <color name="ikasi_text_secondary">#6B5B4E</color>
+    <color name="ikasi_amber">#D4A017</color>
+    <color name="ikasi_amber_pressed">#B8860B</color>
+    <color name="ikasi_locked_piece">#C4B8A8</color>
+    <color name="ikasi_locked_border">#B0A090</color>
+    <color name="ikasi_heatmap_empty">#E8E0D8</color>
+    <color name="ikasi_heatmap_light">#F5C842</color>
+    <color name="ikasi_heatmap_medium">#D4A017</color>
+    <color name="ikasi_heatmap_heavy">#8B6914</color>
+    <color name="ikasi_streak_fire">#FF6B35</color>
+    <color name="ikasi_life_heart">#E84855</color>
 </resources>
 

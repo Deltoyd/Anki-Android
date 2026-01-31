@@ -116,6 +116,8 @@ import com.ichi2.anki.settings.Prefs
 import com.ichi2.anki.settings.enums.DayTheme
 import com.ichi2.anki.snackbar.showSnackbar
 import com.ichi2.anki.ui.internationalization.toSentenceCase
+import com.ichi2.anki.ui.museum.CasinoRewardEngine
+import com.ichi2.anki.ui.museum.RewardOverlayView
 import com.ichi2.anki.ui.windows.reviewer.ReviewerFragment
 import com.ichi2.anki.utils.ext.cardStatsNoCardClean
 import com.ichi2.anki.utils.ext.currentCardStudy
@@ -227,6 +229,10 @@ open class Reviewer :
 
     private val flagItemIds = mutableSetOf<Int>()
 
+    private val casinoRewardEngine = CasinoRewardEngine()
+    private var rewardOverlay: RewardOverlayView? = null
+    private var comboText: TextView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         if (showedActivityFailedScreen(savedInstanceState)) {
             return
@@ -242,6 +248,8 @@ open class Reviewer :
         textBarReview = findViewById(R.id.review_number)
         toolbar = findViewById(R.id.toolbar)
         micToolBarLayer = findViewById(R.id.mic_tool_bar_layer)
+        rewardOverlay = findViewById(R.id.reward_overlay)
+        comboText = findViewById(R.id.combo_text)
         processor = BindingMap(sharedPrefs(), ViewerCommand.entries, this)
         if (sharedPrefs().getString("answerButtonPosition", "bottom") == "bottom" && !navBarNeedsScrim) {
             setNavigationBarColor(R.attr.showAnswerColor)
@@ -1242,6 +1250,10 @@ open class Reviewer :
             }
         }
 
+        val tier = casinoRewardEngine.onAnswer()
+        rewardOverlay?.playReward(tier)
+        updateComboText()
+
         // showing the timebox reached dialog if the timebox is reached
         val timebox = withCol { timeboxReached() }
         if (timebox != null) {
@@ -1832,5 +1844,15 @@ open class Reviewer :
         if (binding.side != CardSide.BOTH && CardSide.fromAnswer(isDisplayingAnswer) != binding.side) return false
         val gesture = (binding.binding as? Binding.GestureInput)?.gesture
         return executeCommand(action, gesture)
+    }
+
+    private fun updateComboText() {
+        val combo = casinoRewardEngine.getCombo()
+        if (combo >= 2) {
+            comboText?.text = "🔥×$combo"
+            comboText?.visibility = View.VISIBLE
+        } else {
+            comboText?.visibility = View.GONE
+        }
     }
 }
