@@ -127,6 +127,27 @@ class MuseumActivity : AnkiActivity() {
         binding.galleryButton.setOnClickListener {
             showThemedToast(this, "Gallery coming soon!", false)
         }
+
+        // Peek button → Show full painting for 3 seconds
+        binding.peekButton.setOnClickListener {
+            showPeekPreview()
+        }
+    }
+
+    /**
+     * Shows the full painting for 3 seconds with a countdown toast.
+     */
+    private fun showPeekPreview() {
+        // Enable peek mode
+        binding.paintingView.enablePeekMode()
+
+        // Show countdown toast
+        showThemedToast(this, "Peeking for 3 seconds...", false)
+
+        // Disable peek mode after 3 seconds
+        binding.paintingView.postDelayed({
+            binding.paintingView.disablePeekMode()
+        }, 3000)
     }
 
     /**

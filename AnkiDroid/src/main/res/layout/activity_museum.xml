@@ -48,6 +48,21 @@
                 app:layout_constraintWidth_max="320dp"
                 app:layout_constraintDimensionRatio="1:1.4" />
 
+            <!-- Peek button (eye icon to preview painting) -->
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/peekButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:contentDescription="Peek at full painting"
+                app:srcCompat="@android:drawable/ic_menu_view"
+                app:fabSize="mini"
+                app:backgroundTint="@color/ikasi_amber"
+                app:tint="@android:color/white"
+                app:elevation="4dp"
+                app:layout_constraintTop_toTopOf="@id/paintingView"
+                app:layout_constraintEnd_toEndOf="@id/paintingView" />
+
             <!-- Progress text -->
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/progressText"

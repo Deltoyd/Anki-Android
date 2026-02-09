@@ -3,20 +3,23 @@ package com.ichi2.anki.ui.museum
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BlurMaskFilter
 import android.graphics.Canvas
+import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
+import android.graphics.Shader
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.DecelerateInterpolator
-import kotlin.math.min
 import kotlin.random.Random
 
 /**
  * Custom View that displays a painting as a jigsaw puzzle with interlocking pieces.
- * Unlocked pieces reveal the actual painting; locked pieces show a uniform warm grey.
+ * Unlocked pieces reveal the actual painting; locked pieces show a beautiful gradient of grays.
  * Features a decorative museum-style frame around the artwork.
+ * Supports "peek mode" to temporarily reveal the full painting.
  */
 class PaintingPuzzleView(
     context: Context,
@@ -29,6 +32,16 @@ class PaintingPuzzleView(
 
         // Puzzle piece tab configuration
         private const val TAB_SIZE = 0.2f // Tab size relative to piece size
+
+        // Gradient colors for locked pieces
+        private val GRAY_GRADIENT_COLORS =
+            intArrayOf(
+                0xFFD4CFC8.toInt(), // Lightest gray
+                0xFFC4B8A8.toInt(), // Medium-light
+                0xFFB5A89A.toInt(), // Medium
+                0xFFA6998B.toInt(), // Medium-dark
+                0xFF978A7C.toInt(), // Darkest gray
+            )
     }
 
     private var painting: Bitmap? = null
@@ -43,9 +56,11 @@ class PaintingPuzzleView(
     private val piecePathCache = mutableMapOf<Int, Path>()
     private val tabPattern = IntArray(TOTAL_PIECES) // 0=none, 1=tab out, -1=blank in
 
+    // Peek mode state
+    private var isPeekMode = false
+
     private val lockedPaint =
         Paint().apply {
-            color = 0xFFC4B8A8.toInt()
             style = Paint.Style.FILL
             isAntiAlias = true
         }
@@ -62,6 +77,23 @@ class PaintingPuzzleView(
         Paint().apply {
             color = 0x20000000
             style = Paint.Style.FILL
+            isAntiAlias = true
+        }
+
+    // Peek mode overlay paint (semi-transparent white with blur)
+    private val peekOverlayPaint =
+        Paint().apply {
+            color = 0x30FFFFFF
+            style = Paint.Style.FILL
+            isAntiAlias = true
+        }
+
+    // Peek mode outline paint
+    private val peekOutlinePaint =
+        Paint().apply {
+            color = 0x80000000.toInt()
+            style = Paint.Style.STROKE
+            strokeWidth = 1.5f
             isAntiAlias = true
         }
 
@@ -95,6 +127,7 @@ class PaintingPuzzleView(
     init {
         // Initialize tab pattern for consistent puzzle piece connections
         initializeTabPattern()
+        setLayerType(LAYER_TYPE_SOFTWARE, null) // Required for blur effects
     }
 
     /**
@@ -123,6 +156,22 @@ class PaintingPuzzleView(
 
     fun unlockPiece(index: Int) {
         unlockedPieces = unlockedPieces + index
+        invalidate()
+    }
+
+    /**
+     * Enable peek mode to temporarily show the full painting.
+     */
+    fun enablePeekMode() {
+        isPeekMode = true
+        invalidate()
+    }
+
+    /**
+     * Disable peek mode to return to normal puzzle view.
+     */
+    fun disablePeekMode() {
+        isPeekMode = false
         invalidate()
     }
 
@@ -228,12 +277,12 @@ class PaintingPuzzleView(
                 )
         }
 
-        // Draw puzzle pieces
-        for (row in 0 until ROWS) {
-            for (col in 0 until COLS) {
-                val index = row * COLS + col
-                drawPuzzlePiece(canvas, row, col, index)
-            }
+        if (isPeekMode) {
+            // In peek mode, show full painting with overlay and outlines
+            drawPeekMode(canvas)
+        } else {
+            // Normal mode: draw puzzle pieces
+            drawPuzzlePieces(canvas)
         }
     }
 
@@ -267,6 +316,44 @@ class PaintingPuzzleView(
                 h - frameWidth + shadowWidth,
             )
         canvas.drawRect(shadowRect, frameShadowPaint)
+    }
+
+    /**
+     * Draws puzzle pieces in normal mode.
+     */
+    private fun drawPuzzlePieces(canvas: Canvas) {
+        for (row in 0 until ROWS) {
+            for (col in 0 until COLS) {
+                val index = row * COLS + col
+                drawPuzzlePiece(canvas, row, col, index)
+            }
+        }
+    }
+
+    /**
+     * Draws the full painting in peek mode with overlay and outlines.
+     */
+    private fun drawPeekMode(canvas: Canvas) {
+        scaledBitmap?.let { bitmap ->
+            // Draw full painting
+            canvas.drawBitmap(bitmap, puzzleRect.left, puzzleRect.top, null)
+
+            // Draw semi-transparent overlay
+            canvas.drawRect(puzzleRect, peekOverlayPaint)
+
+            // Draw puzzle piece outlines
+            for (row in 0 until ROWS) {
+                for (col in 0 until COLS) {
+                    val index = row * COLS + col
+                    val left = puzzleRect.left + (col * pieceWidth)
+                    val top = puzzleRect.top + (row * pieceHeight)
+                    val piecePath = getPiecePathForGrid(row, col, index, left, top)
+
+                    // Draw piece outline
+                    canvas.drawPath(piecePath, peekOutlinePaint)
+                }
+            }
+        }
     }
 
     /**
@@ -304,12 +391,71 @@ class PaintingPuzzleView(
             }
             canvas.restore()
         } else {
-            // Draw locked piece (grey fill)
-            canvas.drawPath(piecePath, lockedPaint)
+            // Draw locked piece with gradient
+            drawLockedPieceWithGradient(canvas, piecePath, row, col)
         }
 
         // Draw piece border for puzzle piece outline
         canvas.drawPath(piecePath, pieceBorderPaint)
+    }
+
+    /**
+     * Draws a locked piece with a beautiful gradient based on position.
+     */
+    private fun drawLockedPieceWithGradient(
+        canvas: Canvas,
+        piecePath: Path,
+        row: Int,
+        col: Int,
+    ) {
+        // Calculate gradient based on piece position
+        // Creates a diagonal gradient from top-left (lightest) to bottom-right (darkest)
+        val normalizedX = col.toFloat() / COLS
+        val normalizedY = row.toFloat() / ROWS
+        val gradientPosition = (normalizedX + normalizedY) / 2f
+
+        // Interpolate between gradient colors
+        val colorIndex = (gradientPosition * (GRAY_GRADIENT_COLORS.size - 1)).toInt()
+        val nextColorIndex = (colorIndex + 1).coerceAtMost(GRAY_GRADIENT_COLORS.size - 1)
+        val fraction = (gradientPosition * (GRAY_GRADIENT_COLORS.size - 1)) - colorIndex
+
+        val color1 = GRAY_GRADIENT_COLORS[colorIndex]
+        val color2 = GRAY_GRADIENT_COLORS[nextColorIndex]
+
+        // Interpolate color
+        val interpolatedColor = interpolateColor(color1, color2, fraction)
+        lockedPaint.color = interpolatedColor
+
+        canvas.drawPath(piecePath, lockedPaint)
+    }
+
+    /**
+     * Interpolates between two colors.
+     */
+    private fun interpolateColor(
+        color1: Int,
+        color2: Int,
+        fraction: Float,
+    ): Int {
+        val f = fraction.coerceIn(0f, 1f)
+        val invF = 1f - f
+
+        val a1 = (color1 shr 24 and 0xFF)
+        val r1 = (color1 shr 16 and 0xFF)
+        val g1 = (color1 shr 8 and 0xFF)
+        val b1 = (color1 and 0xFF)
+
+        val a2 = (color2 shr 24 and 0xFF)
+        val r2 = (color2 shr 16 and 0xFF)
+        val g2 = (color2 shr 8 and 0xFF)
+        val b2 = (color2 and 0xFF)
+
+        val a = (a1 * invF + a2 * f).toInt()
+        val r = (r1 * invF + r2 * f).toInt()
+        val g = (g1 * invF + g2 * f).toInt()
+        val b = (b1 * invF + b2 * f).toInt()
+
+        return (a shl 24) or (r shl 16) or (g shl 8) or b
     }
 
     /**
@@ -356,7 +502,6 @@ class PaintingPuzzleView(
 
         // Bottom edge (check if this piece has a tab pointing down - inverse for piece below)
         if (row < ROWS - 1) {
-            val belowIndex = (row + 1) * COLS + col
             val hasTab = tabPattern[index] == -1 // Inverse: if we have blank, neighbor has tab
             drawEdge(path, right, bottom, left, bottom, tabWidth, hasTab, isHorizontal = true, reverse = true)
         } else {
