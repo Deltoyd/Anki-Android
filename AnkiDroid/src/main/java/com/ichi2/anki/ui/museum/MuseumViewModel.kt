@@ -5,7 +5,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ichi2.anki.CollectionManager.withCol
 import com.ichi2.anki.R
+import com.ichi2.anki.libanki.DeckNameId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,6 +57,21 @@ class MuseumViewModel : ViewModel() {
             val streakDays = MuseumPersistence.getStreakDays(context)
             val extraLives = MuseumPersistence.getExtraLives(context)
 
+            // Load current deck name
+            val currentDeckName =
+                try {
+                    val selectedDeckId = MuseumPersistence.getSelectedDeckId(context)
+                    withCol {
+                        if (selectedDeckId != null) {
+                            decks.name(selectedDeckId, default = true)
+                        } else {
+                            decks.current().name
+                        }
+                    }
+                } catch (e: Exception) {
+                    "Default"
+                }
+
             // Update UI state
             _uiState.update {
                 it.copy(
@@ -63,7 +80,36 @@ class MuseumViewModel : ViewModel() {
                     streakDays = streakDays,
                     extraLives = extraLives,
                     progressText = "${unlockedPieces.size} / 500 pieces",
+                    currentDeckName = currentDeckName,
                 )
+            }
+        }
+    }
+
+    /**
+     * Loads all available decks from the collection.
+     * @return List of deck names and IDs
+     */
+    suspend fun loadAllDecks(): List<DeckNameId> =
+        withCol {
+            decks.allNamesAndIds(includeFiltered = false)
+        }
+
+    /**
+     * Sets the current deck and persists the selection.
+     */
+    fun setCurrentDeck(
+        context: Context,
+        deckId: Long,
+        deckName: String,
+    ) {
+        viewModelScope.launch {
+            MuseumPersistence.setSelectedDeckId(context, deckId)
+            withCol {
+                decks.select(deckId)
+            }
+            _uiState.update {
+                it.copy(currentDeckName = deckName)
             }
         }
     }
@@ -133,6 +179,7 @@ data class MuseumUiState(
     val streakDays: Int = 0,
     val extraLives: Int = 3,
     val progressText: String = "0 / 500 pieces",
+    val currentDeckName: String = "Default",
 )
 
 /**

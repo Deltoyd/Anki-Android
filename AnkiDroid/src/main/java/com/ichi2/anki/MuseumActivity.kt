@@ -71,6 +71,9 @@ class MuseumActivity : AnkiActivity() {
                 val progress = (state.unlockedPieces.size * 100) / 500
                 binding.progressBar.progress = progress
                 binding.progressText.text = "${state.unlockedPieces.size}/500"
+
+                // Update deck selector button
+                binding.languageSelector.text = state.currentDeckName
             }
         }
 
@@ -137,9 +140,9 @@ class MuseumActivity : AnkiActivity() {
      * Setup button click listeners.
      */
     private fun setupButtons() {
-        // Language selector
+        // Deck selector
         binding.languageSelector.setOnClickListener {
-            showThemedToast(this, "Language selection coming soon!", false)
+            showDeckSelectorDialog()
         }
 
         // Menu button
@@ -155,6 +158,41 @@ class MuseumActivity : AnkiActivity() {
         // Review Cards button → Launch Reviewer
         binding.reviewButton.setOnClickListener {
             startActivity(Intent(this, Reviewer::class.java))
+        }
+    }
+
+    /**
+     * Shows a dialog allowing the user to select which deck to study.
+     */
+    private fun showDeckSelectorDialog() {
+        lifecycleScope.launch {
+            val decks = viewModel.loadAllDecks()
+            if (decks.isEmpty()) {
+                showThemedToast(this@MuseumActivity, "No decks available", false)
+                return@launch
+            }
+
+            val deckNames = decks.map { it.name }.toTypedArray()
+            val deckIds = decks.map { it.id }
+
+            MaterialAlertDialogBuilder(this@MuseumActivity)
+                .setTitle("Select Deck")
+                .setItems(deckNames) { dialog, which ->
+                    val selectedDeck = decks[which]
+                    viewModel.setCurrentDeck(
+                        this@MuseumActivity,
+                        selectedDeck.id,
+                        selectedDeck.name,
+                    )
+                    showThemedToast(
+                        this@MuseumActivity,
+                        "Switched to ${selectedDeck.name}",
+                        false,
+                    )
+                    dialog.dismiss()
+                }.setNegativeButton("Cancel") { dialog, _ ->
+                    dialog.dismiss()
+                }.show()
         }
     }
 

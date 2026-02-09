@@ -27,6 +27,7 @@ object MuseumPersistence {
     private const val KEY_STREAK_DAYS = "streak_days"
     private const val KEY_LAST_STUDY_DATE = "last_study_date"
     private const val KEY_EXTRA_LIVES = "extra_lives"
+    private const val KEY_SELECTED_DECK_ID = "selected_deck_id"
 
     private const val DEFAULT_EXTRA_LIVES = 3
 
@@ -164,6 +165,26 @@ object MuseumPersistence {
         } catch (e: Exception) {
             false
         }
+    }
+
+    /**
+     * Returns the currently selected deck ID, or null if none selected.
+     */
+    fun getSelectedDeckId(context: Context): Long? {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val deckId = prefs.getLong(KEY_SELECTED_DECK_ID, -1L)
+        return if (deckId == -1L) null else deckId
+    }
+
+    /**
+     * Sets the currently selected deck ID.
+     */
+    fun setSelectedDeckId(
+        context: Context,
+        deckId: Long,
+    ) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putLong(KEY_SELECTED_DECK_ID, deckId).apply()
     }
 
     /**
