@@ -1,91 +1,185 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/ikasi_bg"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp">
+    android:background="@color/ikasi_bg">
 
-    <!-- App title -->
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/title"
+    <!-- Main scrollable content -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="IKASI"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:textColor="@color/ikasi_text"
-        android:gravity="center"
-        android:paddingTop="24dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:paddingBottom="88dp">
 
-    <!-- Painting puzzle (square, centred) -->
-    <com.ichi2.anki.ui.museum.PaintingPuzzleView
-        android:id="@+id/paintingView"
-        android:layout_width="260dp"
-        android:layout_height="260dp"
-        android:layout_marginTop="12dp"
-        app:layout_constraintTop_toBottomOf="@id/title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="24dp">
 
-    <!-- Study button — centred over the painting -->
-    <androidx.appcompat.widget.AppCompatButton
+            <!-- App title -->
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="IKASI"
+                android:textSize="32sp"
+                android:textColor="@color/ikasi_text"
+                android:fontFamily="sans-serif-light"
+                android:gravity="center"
+                android:letterSpacing="0.15"
+                android:paddingBottom="16dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Painting puzzle (portrait, responsive) -->
+            <com.ichi2.anki.ui.museum.PaintingPuzzleView
+                android:id="@+id/paintingView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@id/title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintWidth_max="320dp"
+                app:layout_constraintDimensionRatio="1:1.4" />
+
+            <!-- Progress text -->
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/progressText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 / 500 pieces"
+                android:textSize="14sp"
+                android:textColor="@color/ikasi_text"
+                android:alpha="0.6"
+                android:layout_marginTop="12dp"
+                app:layout_constraintTop_toBottomOf="@id/paintingView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Stats Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/statsCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:cardElevation="2dp"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="@android:color/white"
+                app:layout_constraintTop_toBottomOf="@id/progressText"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:padding="16dp">
+
+                    <!-- Streak -->
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/streakText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="🔥 0 days"
+                        android:textSize="16sp"
+                        android:textColor="@color/ikasi_text"
+                        android:gravity="center" />
+
+                    <!-- Divider -->
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="24dp"
+                        android:background="@color/ikasi_text"
+                        android:alpha="0.2" />
+
+                    <!-- Lives -->
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/livesText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="☐ ☐ ☐"
+                        android:textSize="16sp"
+                        android:textColor="@color/ikasi_text"
+                        android:gravity="center" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Heatmap -->
+            <com.ichi2.anki.ui.museum.HeatmapView
+                android:id="@+id/heatmapView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toBottomOf="@id/statsCard"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Quick Actions -->
+            <LinearLayout
+                android:id="@+id/quickActionsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintTop_toBottomOf="@id/heatmapView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/decksButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="Decks"
+                    android:textColor="@color/ikasi_text"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    app:strokeColor="@color/ikasi_text"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/galleryButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="Gallery"
+                    android:textColor="@color/ikasi_text"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    app:strokeColor="@color/ikasi_text"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="8dp" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Floating Study Button -->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/studyButton"
-        android:layout_width="170dp"
-        android:layout_height="52dp"
-        android:text="Ikasi →"
-        android:textSize="20sp"
-        android:textColor="#FFFFFF"
-        android:background="@drawable/btn_study"
-        android:elevation="3dp"
-        app:layout_constraintTop_toTopOf="@id/paintingView"
-        app:layout_constraintBottom_toBottomOf="@id/paintingView"
-        app:layout_constraintStart_toStartOf="@id/paintingView"
-        app:layout_constraintEnd_toEndOf="@id/paintingView" />
-
-    <!-- Streak bar -->
-    <LinearLayout
-        android:id="@+id/streakBar"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="14dp"
-        app:layout_constraintTop_toBottomOf="@id/paintingView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_margin="16dp"
+        android:text="Ikasi"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        app:icon="@drawable/ic_play"
+        app:iconTint="@android:color/white"
+        app:backgroundTint="@color/ikasi_amber"
+        app:elevation="6dp" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/streakText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="🔥 0 days"
-            android:textSize="18sp"
-            android:textColor="@color/ikasi_text"
-            android:layout_marginEnd="14dp" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/livesText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="☐ ☐ ☐"
-            android:textSize="18sp"
-            android:textColor="@color/ikasi_text" />
-    </LinearLayout>
-
-    <!-- Heatmap (fills remaining vertical space) -->
-    <com.ichi2.anki.ui.museum.HeatmapView
-        android:id="@+id/heatmapView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@id/streakBar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

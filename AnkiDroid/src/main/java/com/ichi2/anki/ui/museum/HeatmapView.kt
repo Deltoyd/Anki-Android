@@ -1,20 +1,24 @@
 package com.ichi2.anki.ui.museum
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import java.util.Calendar
-
 
 /**
  * Custom View that renders a study-activity heatmap (year / month / week).
  * Tap drills down: Year → Month → Week → (back to Year).
  * Activity data is keyed by "YYYY-MM-DD" strings mapped to card-review counts.
  */
-class HeatmapView(context: Context, attrs: AttributeSet? = null) : View(context, attrs) {
-
+class HeatmapView(
+    context: Context,
+    attrs: AttributeSet? = null,
+) : View(context, attrs) {
     enum class Granularity { YEAR, MONTH, WEEK }
 
     private var granularity = Granularity.YEAR
@@ -24,21 +28,23 @@ class HeatmapView(context: Context, attrs: AttributeSet? = null) : View(context,
 
     // Warm museum palette
     private val colorEmpty = Color.parseColor("#E8E0D8")
-    private val colorLight = Color.parseColor("#F5C842")   // 1-5 cards
-    private val colorMedium = Color.parseColor("#D4A017")  // 6-15 cards
-    private val colorHeavy = Color.parseColor("#8B6914")   // 16+ cards
+    private val colorLight = Color.parseColor("#F5C842") // 1-5 cards
+    private val colorMedium = Color.parseColor("#D4A017") // 6-15 cards
+    private val colorHeavy = Color.parseColor("#8B6914") // 16+ cards
 
-    private val squarePaint = Paint().apply {
-        style = Paint.Style.FILL
-        isAntiAlias = true
-    }
+    private val squarePaint =
+        Paint().apply {
+            style = Paint.Style.FILL
+            isAntiAlias = true
+        }
 
-    private val labelPaint = Paint().apply {
-        color = Color.parseColor("#6B5B4E")
-        textSize = 10f * context.resources.displayMetrics.density
-        typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
-        isAntiAlias = true
-    }
+    private val labelPaint =
+        Paint().apply {
+            color = Color.parseColor("#6B5B4E")
+            textSize = 10f * context.resources.displayMetrics.density
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
+            isAntiAlias = true
+        }
 
     private var squareSize = 0f
     private var gap = 2f
@@ -62,13 +68,17 @@ class HeatmapView(context: Context, attrs: AttributeSet? = null) : View(context,
 
     fun getGranularity(): Granularity = granularity
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    override fun onMeasure(
+        widthMeasureSpec: Int,
+        heightMeasureSpec: Int,
+    ) {
         val width = MeasureSpec.getSize(widthMeasureSpec)
-        val height = when (granularity) {
-            Granularity.YEAR -> (width * 0.48).toInt()
-            Granularity.MONTH -> (width * 0.62).toInt()
-            Granularity.WEEK -> (width * 0.22).toInt()
-        }
+        val height =
+            when (granularity) {
+                Granularity.YEAR -> (width * 0.48).toInt()
+                Granularity.MONTH -> (width * 0.62).toInt()
+                Granularity.WEEK -> (width * 0.22).toInt()
+            }
         setMeasuredDimension(width, height)
     }
 
@@ -130,7 +140,10 @@ class HeatmapView(context: Context, attrs: AttributeSet? = null) : View(context,
             datePositions.add(Triple(x, y, current.toDateKey()))
 
             row++
-            if (row >= 7) { row = 0; col++ }
+            if (row >= 7) {
+                row = 0
+                col++
+            }
             current.add(Calendar.DAY_OF_MONTH, 1)
         }
     }
@@ -146,10 +159,21 @@ class HeatmapView(context: Context, attrs: AttributeSet? = null) : View(context,
         squareSize = (availableWidth - gap * 6) / 7
 
         // Month + year title
-        val monthNames = arrayOf(
-            "January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December",
-        )
+        val monthNames =
+            arrayOf(
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December",
+            )
         labelPaint.textAlign = Paint.Align.CENTER
         labelPaint.isFakeBoldText = true
         canvas.drawText("${monthNames[focusMonth]} $focusYear", width / 2f, padding + 14f, labelPaint)
@@ -179,7 +203,10 @@ class HeatmapView(context: Context, attrs: AttributeSet? = null) : View(context,
             datePositions.add(Triple(x, y, current.toDateKey()))
 
             col++
-            if (col >= 7) { col = 0; row++ }
+            if (col >= 7) {
+                col = 0
+                row++
+            }
             current.add(Calendar.DAY_OF_MONTH, 1)
         }
     }
@@ -210,11 +237,14 @@ class HeatmapView(context: Context, attrs: AttributeSet? = null) : View(context,
 
         // Find Monday of current week
         val today = Calendar.getInstance()
-        val monday = (today.clone() as Calendar).apply {
-            add(Calendar.DAY_OF_MONTH, -mondayBasedDow(this))
-            set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
-        }
+        val monday =
+            (today.clone() as Calendar).apply {
+                add(Calendar.DAY_OF_MONTH, -mondayBasedDow(this))
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
 
         val current = monday.clone() as Calendar
         for (i in 0..6) {
@@ -229,25 +259,34 @@ class HeatmapView(context: Context, attrs: AttributeSet? = null) : View(context,
 
     // ─── SHARED HELPERS ───────────────────────────────────────────────────────
 
-    private fun drawSquare(canvas: Canvas, x: Float, y: Float, dateKey: String) {
+    private fun drawSquare(
+        canvas: Canvas,
+        x: Float,
+        y: Float,
+        dateKey: String,
+    ) {
         val cards = activityData[dateKey] ?: 0
         squarePaint.color = colorForCards(cards)
         val r = squareSize * 0.2f
         canvas.drawRoundRect(RectF(x, y, x + squareSize, y + squareSize), r, r, squarePaint)
     }
 
-    private fun colorForCards(cards: Int): Int = when {
-        cards == 0 -> colorEmpty
-        cards in 1..5 -> colorLight
-        cards in 6..15 -> colorMedium
-        else -> colorHeavy
-    }
+    private fun colorForCards(cards: Int): Int =
+        when {
+            cards == 0 -> colorEmpty
+            cards in 1..5 -> colorLight
+            cards in 6..15 -> colorMedium
+            else -> colorHeavy
+        }
 
     /** Monday = 0, … Sunday = 6 */
-    private fun mondayBasedDow(cal: Calendar): Int =
-        (cal.get(Calendar.DAY_OF_WEEK) + 5) % 7
+    private fun mondayBasedDow(cal: Calendar): Int = (cal.get(Calendar.DAY_OF_WEEK) + 5) % 7
 
-    private fun calendarForDay(year: Int, month: Int, day: Int): Calendar =
+    private fun calendarForDay(
+        year: Int,
+        month: Int,
+        day: Int,
+    ): Calendar =
         Calendar.getInstance().apply {
             set(year, month, day, 0, 0, 0)
             set(Calendar.MILLISECOND, 0)
@@ -257,7 +296,8 @@ class HeatmapView(context: Context, attrs: AttributeSet? = null) : View(context,
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_UP) {
-            val x = event.x; val y = event.y
+            val x = event.x
+            val y = event.y
 
             for ((px, py, dateKey) in datePositions) {
                 if (x in px..(px + squareSize) && y in py..(py + squareSize)) {
@@ -286,5 +326,4 @@ class HeatmapView(context: Context, attrs: AttributeSet? = null) : View(context,
 }
 
 /** "YYYY-MM-DD" key for use as heatmap data key. */
-fun Calendar.toDateKey(): String =
-    String.format("%04d-%02d-%02d", get(Calendar.YEAR), get(Calendar.MONTH) + 1, get(Calendar.DAY_OF_MONTH))
+fun Calendar.toDateKey(): String = String.format("%04d-%02d-%02d", get(Calendar.YEAR), get(Calendar.MONTH) + 1, get(Calendar.DAY_OF_MONTH))

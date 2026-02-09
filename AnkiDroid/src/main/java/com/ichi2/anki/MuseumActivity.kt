@@ -1,116 +1,108 @@
 package com.ichi2.anki
 
 import android.content.Intent
-import android.graphics.*
 import android.os.Bundle
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.ichi2.anki.databinding.ActivityMuseumBinding
+import com.ichi2.anki.ui.museum.MuseumEvent
+import com.ichi2.anki.ui.museum.MuseumPersistence
+import com.ichi2.anki.ui.museum.MuseumViewModel
+import com.ichi2.anki.ui.museum.toDateKey
+import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Random
 
-import com.ichi2.anki.databinding.ActivityMuseumBinding
-import com.ichi2.anki.ui.museum.toDateKey
-
-
 /**
- * IKASI museum home screen.
+ * IKASI museum home screen - the main entry point of the app.
  *
  * Displays:
- *   • The current painting-in-progress as a puzzle (PaintingPuzzleView)
- *   • A streak bar with extra-life hearts
- *   • A year heatmap of study activity (HeatmapView)
- *   • A "Study" button that launches the card reviewer
+ *   • The Mona Lisa as a 500-piece puzzle that progressively reveals with study
+ *   • Study streak and extra lives
+ *   • Year heatmap of study activity
+ *   • Floating "Ikasi" study button
+ *   • Quick action buttons (Decks, Gallery)
  *
- * PoC state: painting, streak, and heatmap data are generated locally.
- * A future revision will wire these to the FSRS backend and persistent storage.
+ * Design philosophy: Minimalistic and elegant (Tesla/Apple inspired),
+ * making users excited to press the study button.
  */
 class MuseumActivity : AnkiActivity() {
-
     private lateinit var binding: ActivityMuseumBinding
+    private val viewModel: MuseumViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMuseumBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupPainting()
-        setupStreak()
+        setupObservers()
         setupHeatmap()
-        setupStudyButton()
+        setupButtons()
+
+        // Load initial data
+        viewModel.loadMuseumData(this)
     }
 
-    // ─── PAINTING ─────────────────────────────────────────────────────────────
-
-    private fun setupPainting() {
-        binding.paintingView.setPainting(generateTestPainting())
-        // PoC: first 8 scattered pieces are "unlocked" to demonstrate the concept
-        binding.paintingView.setUnlockedPieces(setOf(0, 1, 2, 3, 5, 6, 7, 10))
+    override fun onResume() {
+        super.onResume()
+        // Refresh data when returning from Reviewer
+        viewModel.refreshData(this)
     }
 
     /**
-     * Generates a colourful abstract test image until real public-domain art is loaded.
-     * Warm palette matches the IKASI museum aesthetic.
+     * Setup lifecycle observers for StateFlow and SharedFlow.
      */
-    private fun generateTestPainting(): Bitmap {
-        val size = 500
-        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
+    private fun setupObservers() {
+        // Observe UI state
+        lifecycleScope.launch {
+            viewModel.uiState.collect { state ->
+                // Update painting
+                state.painting?.let { painting ->
+                    binding.paintingView.setPainting(painting)
+                }
 
-        // Warm gradient background
-        val gradient = LinearGradient(
-            0f, 0f, size.toFloat(), size.toFloat(),
-            intArrayOf(
-                0xFFE8A838.toInt(),
-                0xFFD4840A.toInt(),
-                0xFF8B5A0B.toInt(),
-                0xFFCC7A22.toInt(),
-            ),
-            floatArrayOf(0f, 0.3f, 0.7f, 1f),
-            Shader.TileMode.CLAMP,
-        )
-        canvas.drawRect(0f, 0f, size.toFloat(), size.toFloat(), Paint().apply { shader = gradient })
+                // Update unlocked pieces
+                binding.paintingView.setUnlockedPieces(state.unlockedPieces)
 
-        // Abstract shapes — stand-in for real art
-        val paint = Paint().apply { isAntiAlias = true; style = Paint.Style.FILL }
+                // Update progress text
+                binding.progressText.text = state.progressText
 
-        paint.color = 0xFFFF6B35.toInt()
-        canvas.drawCircle(120f, 180f, 90f, paint)
+                // Update streak
+                binding.streakText.text = "🔥 ${state.streakDays} days"
 
-        paint.color = 0xFFDAA520.toInt()
-        canvas.drawCircle(350f, 120f, 110f, paint)
+                // Update lives
+                val maxLives = 3
+                binding.livesText.text = "❤️".repeat(state.extraLives) +
+                    "☐".repeat(maxLives - state.extraLives)
+            }
+        }
 
-        paint.color = 0xFF8B4513.toInt()
-        canvas.drawCircle(280f, 380f, 70f, paint)
-
-        paint.color = 0xFFCD853F.toInt()
-        canvas.drawCircle(80f, 400f, 55f, paint)
-
-        paint.color = 0xFFFF8C00.toInt()
-        canvas.drawCircle(420f, 350f, 80f, paint)
-
-        // A rectangle to add geometric contrast
-        paint.color = 0xFF6B3A2A.toInt()
-        canvas.drawRect(200f, 60f, 370f, 200f, paint)
-
-        return bitmap
+        // Observe events
+        lifecycleScope.launch {
+            viewModel.events.collect { event ->
+                when (event) {
+                    is MuseumEvent.PieceUnlocked -> {
+                        // Trigger piece unlock animation
+                        binding.paintingView.animateUnlock(event.pieceIndex)
+                    }
+                    is MuseumEvent.PuzzleCompleted -> {
+                        // Show completion celebration dialog
+                        showCompletionDialog()
+                    }
+                }
+            }
+        }
     }
 
-    // ─── STREAK ───────────────────────────────────────────────────────────────
-
-    private fun setupStreak() {
-        // PoC: hard-coded mock values
-        val streakDays = 12
-        val extraLives = 2
-        val maxLives = 3
-
-        binding.streakText.text = "🔥 $streakDays days"
-        binding.livesText.text = "❤️".repeat(extraLives) + "☐".repeat(maxLives - extraLives)
-    }
-
-    // ─── HEATMAP ──────────────────────────────────────────────────────────────
-
+    /**
+     * Setup heatmap with activity data.
+     */
     private fun setupHeatmap() {
+        // Use existing mock data generation for now
+        // TODO: Replace with actual study data from collection
         binding.heatmapView.setActivityData(generateMockActivityData())
 
-        // Tap on a day in week view shows a simple toast with details
         binding.heatmapView.onDayTapped = { dateKey ->
             val cards = generateMockActivityData()[dateKey] ?: 0
             showThemedToast(this, "$dateKey — $cards cards reviewed", false)
@@ -118,33 +110,68 @@ class MuseumActivity : AnkiActivity() {
     }
 
     /**
+     * Setup button click listeners.
+     */
+    private fun setupButtons() {
+        // Study button → Launch Reviewer
+        binding.studyButton.setOnClickListener {
+            startActivity(Intent(this, Reviewer::class.java))
+        }
+
+        // Decks button → Launch DeckPicker
+        binding.decksButton.setOnClickListener {
+            startActivity(Intent(this, DeckPicker::class.java))
+        }
+
+        // Gallery button → Coming soon toast
+        binding.galleryButton.setOnClickListener {
+            showThemedToast(this, "Gallery coming soon!", false)
+        }
+    }
+
+    /**
+     * Shows a celebration dialog when the puzzle is completed.
+     */
+    private fun showCompletionDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Masterpiece Complete!")
+            .setMessage("You've revealed the entire Mona Lisa! Your dedication to learning is inspiring.")
+            .setPositiveButton("Continue Learning") { dialog, _ ->
+                dialog.dismiss()
+            }.setNeutralButton("View Gallery") { dialog, _ ->
+                showThemedToast(this, "Gallery coming soon!", false)
+                dialog.dismiss()
+            }.setCancelable(false)
+            .show()
+    }
+
+    /**
      * Generates 120 days of plausible mock study data.
      * Uses a fixed seed so the heatmap looks consistent across runs.
+     *
+     * TODO: Replace with actual study data from collection
      */
     private fun generateMockActivityData(): Map<String, Int> {
         val data = mutableMapOf<String, Int>()
         val random = Random(42)
+        val streakDays = MuseumPersistence.getStreakDays(this)
 
         for (i in 0..120) {
-            val date = Calendar.getInstance().apply {
-                add(Calendar.DAY_OF_MONTH, -i)
-            }
-            // Recent 12 days always have data (simulates current streak)
-            if (i <= 12 || random.nextFloat() < 0.6f) {
-                val cards = if (i <= 12) random.nextInt(15) + 10 else random.nextInt(25) + 5
+            val date =
+                Calendar.getInstance().apply {
+                    add(Calendar.DAY_OF_MONTH, -i)
+                }
+            // Recent streak days always have data
+            if (i < streakDays || random.nextFloat() < 0.6f) {
+                val cards =
+                    if (i < streakDays) {
+                        random.nextInt(15) + 10
+                    } else {
+                        random.nextInt(25) + 5
+                    }
                 data[date.toDateKey()] = cards
             }
         }
         return data
-    }
-
-    // ─── STUDY BUTTON ─────────────────────────────────────────────────────────
-
-    private fun setupStudyButton() {
-        binding.studyButton.setOnClickListener {
-            // Launch the existing Anki reviewer.
-            // Future: select the curated Basque deck, inject casino layer.
-            startActivity(Intent(this, Reviewer::class.java))
-        }
     }
 }

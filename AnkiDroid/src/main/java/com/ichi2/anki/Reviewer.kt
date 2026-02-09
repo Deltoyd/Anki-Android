@@ -1254,6 +1254,9 @@ open class Reviewer :
         rewardOverlay?.playReward(tier)
         updateComboText()
 
+        // Unlock puzzle piece in Museum
+        unlockRandomPuzzlePiece()
+
         // showing the timebox reached dialog if the timebox is reached
         val timebox = withCol { timeboxReached() }
         if (timebox != null) {
@@ -1284,6 +1287,40 @@ open class Reviewer :
                 }
             }
         }
+    }
+
+    /**
+     * Unlocks a random puzzle piece in the Museum as a reward for reviewing a card.
+     * Also updates the study streak on the first card review of each day.
+     */
+    private fun unlockRandomPuzzlePiece() {
+        // Update streak (only increments once per day on first card)
+        com.ichi2.anki.ui.museum.MuseumPersistence
+            .updateStreak(this)
+
+        // Get currently unlocked pieces
+        val unlocked =
+            com.ichi2.anki.ui.museum.MuseumPersistence
+                .getUnlockedPieces(this)
+
+        // Check if all pieces are unlocked
+        if (unlocked.size >= com.ichi2.anki.ui.museum.PaintingPuzzleView.TOTAL_PIECES) {
+            return // Puzzle complete
+        }
+
+        // Find all locked pieces
+        val allPieces = (0 until com.ichi2.anki.ui.museum.PaintingPuzzleView.TOTAL_PIECES).toSet()
+        val locked = allPieces - unlocked
+
+        // Select random locked piece
+        val randomPiece = locked.random()
+
+        // Unlock it
+        com.ichi2.anki.ui.museum.MuseumPersistence
+            .addUnlockedPiece(this, randomPiece)
+
+        // Show feedback toast
+        showThemedToast(this, "Puzzle piece unlocked! ${unlocked.size + 1}/500", false)
     }
 
     override fun displayCardQuestion() {
