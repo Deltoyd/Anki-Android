@@ -46,7 +46,7 @@ class MuseumViewModel : ViewModel() {
                 withContext(Dispatchers.IO) {
                     BitmapFactory.decodeResource(
                         context.resources,
-                        R.drawable.mona_lisa,
+                        R.drawable.basque_countryside,
                     )
                 }
 

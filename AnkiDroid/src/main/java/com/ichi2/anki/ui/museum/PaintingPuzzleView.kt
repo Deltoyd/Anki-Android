@@ -67,9 +67,9 @@ class PaintingPuzzleView(
 
     private val pieceBorderPaint =
         Paint().apply {
-            color = 0xFF8B7355.toInt()
+            color = 0xFF757575.toInt() // museolingo_puzzle_border
             style = Paint.Style.STROKE
-            strokeWidth = 0.8f
+            strokeWidth = 1f
             isAntiAlias = true
         }
 
@@ -180,8 +180,8 @@ class PaintingPuzzleView(
         heightMeasureSpec: Int,
     ) {
         val width = MeasureSpec.getSize(widthMeasureSpec)
-        // Portrait aspect ratio (1:1.4) for Mona Lisa + frame
-        val height = (width * 1.4f).toInt()
+        // Landscape aspect ratio (3:2) for countryside image
+        val height = (width * 2f / 3f).toInt()
         setMeasuredDimension(width, height)
     }
 
@@ -193,20 +193,19 @@ class PaintingPuzzleView(
     ) {
         super.onSizeChanged(w, h, oldw, oldh)
 
-        // Calculate frame dimensions (8% of width)
-        frameWidth = w * 0.08f
+        // No frame in new design - puzzle fills entire view
+        frameWidth = 0f
+        puzzleRect = RectF(0f, 0f, w.toFloat(), h.toFloat())
 
-        // Calculate puzzle area (inside frame)
-        val puzzleWidth = w - (frameWidth * 2)
-        val puzzleHeight = h - (frameWidth * 2)
-        puzzleRect = RectF(frameWidth, frameWidth, w - frameWidth, h - frameWidth)
+        val puzzleWidth = w
+        val puzzleHeight = h
 
         if (painting != null && puzzleWidth > 0 && puzzleHeight > 0) {
             scaledBitmap =
                 Bitmap.createScaledBitmap(
                     painting!!,
-                    puzzleWidth.toInt(),
-                    puzzleHeight.toInt(),
+                    puzzleWidth,
+                    puzzleHeight,
                     true,
                 )
         }
@@ -257,8 +256,7 @@ class PaintingPuzzleView(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        // Draw frame first
-        drawFrame(canvas)
+        // No frame in new design
 
         // Calculate piece dimensions
         val puzzleWidth = puzzleRect.width()
@@ -400,7 +398,7 @@ class PaintingPuzzleView(
     }
 
     /**
-     * Draws a locked piece with a beautiful gradient based on position.
+     * Draws a locked piece with flat medium gray.
      */
     private fun drawLockedPieceWithGradient(
         canvas: Canvas,
@@ -408,23 +406,8 @@ class PaintingPuzzleView(
         row: Int,
         col: Int,
     ) {
-        // Calculate gradient based on piece position
-        // Creates a diagonal gradient from top-left (lightest) to bottom-right (darkest)
-        val normalizedX = col.toFloat() / COLS
-        val normalizedY = row.toFloat() / ROWS
-        val gradientPosition = (normalizedX + normalizedY) / 2f
-
-        // Interpolate between gradient colors
-        val colorIndex = (gradientPosition * (GRAY_GRADIENT_COLORS.size - 1)).toInt()
-        val nextColorIndex = (colorIndex + 1).coerceAtMost(GRAY_GRADIENT_COLORS.size - 1)
-        val fraction = (gradientPosition * (GRAY_GRADIENT_COLORS.size - 1)) - colorIndex
-
-        val color1 = GRAY_GRADIENT_COLORS[colorIndex]
-        val color2 = GRAY_GRADIENT_COLORS[nextColorIndex]
-
-        // Interpolate color
-        val interpolatedColor = interpolateColor(color1, color2, fraction)
-        lockedPaint.color = interpolatedColor
+        // Use flat medium gray for locked pieces (MuseoLingo design)
+        lockedPaint.color = 0xFF9E9E9E.toInt() // museolingo_puzzle_gray
 
         canvas.drawPath(piecePath, lockedPaint)
     }

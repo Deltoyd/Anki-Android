@@ -15,17 +15,17 @@ import java.util.Calendar
 import java.util.Random
 
 /**
- * IKASI museum home screen - the main entry point of the app.
+ * MuseoLingo home screen - the main entry point of the app.
  *
  * Displays:
- *   • The Mona Lisa as a 500-piece puzzle that progressively reveals with study
- *   • Study streak and extra lives
- *   • Year heatmap of study activity
- *   • Floating "Ikasi" study button
- *   • Quick action buttons (Decks, Gallery)
+ *   • Top navigation with language selector, MuseoLingo title, and menu
+ *   • Stats row showing streak and today's cards
+ *   • Landscape puzzle card with Basque countryside image
+ *   • Progress bar and peek button
+ *   • Activity heatmap with year header
+ *   • Bottom review cards button with due count
  *
- * Design philosophy: Minimalistic and elegant (Tesla/Apple inspired),
- * making users excited to press the study button.
+ * Design: Clean, editorial learning app aesthetic with amber accents
  */
 class MuseumActivity : AnkiActivity() {
     private lateinit var binding: ActivityMuseumBinding
@@ -37,10 +37,11 @@ class MuseumActivity : AnkiActivity() {
         setContentView(binding.root)
 
         setupObservers()
-        setupHeatmap()
         setupButtons()
+        setupStats()
+        setupHeatmap()
 
-        // Load initial data
+        // Load initial data (now uses basque_countryside.jpg)
         viewModel.loadMuseumData(this)
     }
 
@@ -48,6 +49,7 @@ class MuseumActivity : AnkiActivity() {
         super.onResume()
         // Refresh data when returning from Reviewer
         viewModel.refreshData(this)
+        updateStats()
     }
 
     /**
@@ -65,16 +67,10 @@ class MuseumActivity : AnkiActivity() {
                 // Update unlocked pieces
                 binding.paintingView.setUnlockedPieces(state.unlockedPieces)
 
-                // Update progress text
-                binding.progressText.text = state.progressText
-
-                // Update streak
-                binding.streakText.text = "🔥 ${state.streakDays} days"
-
-                // Update lives
-                val maxLives = 3
-                binding.livesText.text = "❤️".repeat(state.extraLives) +
-                    "☐".repeat(maxLives - state.extraLives)
+                // Update progress (out of 500 pieces)
+                val progress = (state.unlockedPieces.size * 100) / 500
+                binding.progressBar.progress = progress
+                binding.progressText.text = "${state.unlockedPieces.size}/500"
             }
         }
 
@@ -96,15 +92,43 @@ class MuseumActivity : AnkiActivity() {
     }
 
     /**
+     * Setup stats row (streak and today's cards).
+     */
+    private fun setupStats() {
+        updateStats()
+    }
+
+    /**
+     * Update stats display.
+     */
+    private fun updateStats() {
+        val streakDays = MuseumPersistence.getStreakDays(this)
+        binding.streakStat.text = "🔥 $streakDays"
+
+        // TODO: Get actual cards reviewed today from collection
+        val cardsToday = 0 // Placeholder
+        binding.todayStat.text = "📖 $cardsToday today"
+    }
+
+    /**
      * Setup heatmap with activity data.
      */
     private fun setupHeatmap() {
+        // Set current year
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+        binding.heatmapYear.text = currentYear.toString()
+
         // Use existing mock data generation for now
-        // TODO: Replace with actual study data from collection
-        binding.heatmapView.setActivityData(generateMockActivityData())
+        val activityData = generateMockActivityData()
+        binding.heatmapView.setActivityData(activityData)
+
+        // Calculate total reviews and active days
+        val totalReviews = activityData.values.sum()
+        val activeDays = activityData.size
+        binding.heatmapSubheader.text = "$totalReviews reviews   $activeDays days"
 
         binding.heatmapView.onDayTapped = { dateKey ->
-            val cards = generateMockActivityData()[dateKey] ?: 0
+            val cards = activityData[dateKey] ?: 0
             showThemedToast(this, "$dateKey — $cards cards reviewed", false)
         }
     }
@@ -113,24 +137,24 @@ class MuseumActivity : AnkiActivity() {
      * Setup button click listeners.
      */
     private fun setupButtons() {
-        // Study button → Launch Reviewer
-        binding.studyButton.setOnClickListener {
-            startActivity(Intent(this, Reviewer::class.java))
+        // Language selector
+        binding.languageSelector.setOnClickListener {
+            showThemedToast(this, "Language selection coming soon!", false)
         }
 
-        // Decks button → Launch DeckPicker
-        binding.decksButton.setOnClickListener {
+        // Menu button
+        binding.menuButton.setOnClickListener {
             startActivity(Intent(this, DeckPicker::class.java))
-        }
-
-        // Gallery button → Coming soon toast
-        binding.galleryButton.setOnClickListener {
-            showThemedToast(this, "Gallery coming soon!", false)
         }
 
         // Peek button → Show full painting for 3 seconds
         binding.peekButton.setOnClickListener {
             showPeekPreview()
+        }
+
+        // Review Cards button → Launch Reviewer
+        binding.reviewButton.setOnClickListener {
+            startActivity(Intent(this, Reviewer::class.java))
         }
     }
 
@@ -156,7 +180,7 @@ class MuseumActivity : AnkiActivity() {
     private fun showCompletionDialog() {
         MaterialAlertDialogBuilder(this)
             .setTitle("Masterpiece Complete!")
-            .setMessage("You've revealed the entire Mona Lisa! Your dedication to learning is inspiring.")
+            .setMessage("You've revealed the entire Basque countryside! Your dedication to learning is inspiring.")
             .setPositiveButton("Continue Learning") { dialog, _ ->
                 dialog.dismiss()
             }.setNeutralButton("View Gallery") { dialog, _ ->

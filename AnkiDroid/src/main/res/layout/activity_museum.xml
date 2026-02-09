@@ -2,9 +2,10 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/ikasi_bg">
+    android:background="@color/museolingo_bg">
 
     <!-- Main scrollable content -->
     <androidx.core.widget.NestedScrollView
@@ -13,188 +14,243 @@
         android:fillViewport="true"
         android:paddingBottom="88dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="24dp"
-            android:paddingEnd="24dp"
-            android:paddingTop="24dp">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <!-- App title -->
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="IKASI"
-                android:textSize="32sp"
-                android:textColor="@color/ikasi_text"
-                android:fontFamily="sans-serif-light"
-                android:gravity="center"
-                android:letterSpacing="0.15"
-                android:paddingBottom="16dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            <!-- Painting puzzle (portrait, responsive) -->
-            <com.ichi2.anki.ui.museum.PaintingPuzzleView
-                android:id="@+id/paintingView"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintTop_toBottomOf="@id/title"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintWidth_max="320dp"
-                app:layout_constraintDimensionRatio="1:1.4" />
-
-            <!-- Peek button (eye icon to preview painting) -->
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/peekButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:contentDescription="Peek at full painting"
-                app:srcCompat="@android:drawable/ic_menu_view"
-                app:fabSize="mini"
-                app:backgroundTint="@color/ikasi_amber"
-                app:tint="@android:color/white"
-                app:elevation="4dp"
-                app:layout_constraintTop_toTopOf="@id/paintingView"
-                app:layout_constraintEnd_toEndOf="@id/paintingView" />
-
-            <!-- Progress text -->
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/progressText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0 / 500 pieces"
-                android:textSize="14sp"
-                android:textColor="@color/ikasi_text"
-                android:alpha="0.6"
-                android:layout_marginTop="12dp"
-                app:layout_constraintTop_toBottomOf="@id/paintingView"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            <!-- Stats Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/statsCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                app:cardElevation="2dp"
-                app:cardCornerRadius="12dp"
-                app:cardBackgroundColor="@android:color/white"
-                app:layout_constraintTop_toBottomOf="@id/progressText"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center"
-                    android:padding="16dp">
-
-                    <!-- Streak -->
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/streakText"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="🔥 0 days"
-                        android:textSize="16sp"
-                        android:textColor="@color/ikasi_text"
-                        android:gravity="center" />
-
-                    <!-- Divider -->
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="24dp"
-                        android:background="@color/ikasi_text"
-                        android:alpha="0.2" />
-
-                    <!-- Lives -->
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/livesText"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="☐ ☐ ☐"
-                        android:textSize="16sp"
-                        android:textColor="@color/ikasi_text"
-                        android:gravity="center" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Heatmap -->
-            <com.ichi2.anki.ui.museum.HeatmapView
-                android:id="@+id/heatmapView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                app:layout_constraintTop_toBottomOf="@id/statsCard"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            <!-- Quick Actions -->
+            <!-- Top Navigation Bar -->
             <LinearLayout
-                android:id="@+id/quickActionsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingTop="8dp"
+                android:paddingBottom="16dp">
+
+                <!-- Language Selector (Left) -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/languageSelector"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="🇪🇸 Basque"
+                    android:textSize="14sp"
+                    android:textColor="@color/museolingo_text"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="8dp"
+                    app:icon="@android:drawable/arrow_down_float"
+                    app:iconGravity="end"
+                    app:iconSize="16dp"
+                    app:iconTint="@color/museolingo_text"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    app:strokeColor="@android:color/transparent"
+                    app:cornerRadius="18dp"
+                    android:background="@android:color/transparent" />
+
+                <!-- App Title (Center) -->
+                <TextView
+                    android:id="@+id/appTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="MuseoLingo"
+                    android:textSize="20sp"
+                    android:textColor="@color/museolingo_text"
+                    android:fontFamily="serif"
+                    android:gravity="center"
+                    android:textStyle="bold" />
+
+                <!-- Menu Icon (Right) -->
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/menuButton"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:contentDescription="Menu"
+                    app:fabCustomSize="40dp"
+                    app:srcCompat="@android:drawable/ic_menu_view"
+                    app:tint="@color/museolingo_text"
+                    app:backgroundTint="@android:color/transparent"
+                    app:elevation="0dp"
+                    app:borderWidth="1dp" />
+            </LinearLayout>
+
+            <!-- Stats Row -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="16dp"
-                app:layout_constraintTop_toBottomOf="@id/heatmapView"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
+                android:paddingBottom="20dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/decksButton"
-                    android:layout_width="0dp"
+                <!-- Streak Stat -->
+                <TextView
+                    android:id="@+id/streakStat"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    android:text="Decks"
-                    android:textColor="@color/ikasi_text"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    app:strokeColor="@color/ikasi_text"
-                    app:strokeWidth="1dp"
-                    app:cornerRadius="8dp" />
+                    android:text="🔥 14"
+                    android:textSize="16sp"
+                    android:textColor="@color/museolingo_text"
+                    android:textStyle="bold"
+                    android:paddingEnd="24dp" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/galleryButton"
-                    android:layout_width="0dp"
+                <!-- Today's Cards Stat -->
+                <TextView
+                    android:id="@+id/todayStat"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:text="Gallery"
-                    android:textColor="@color/ikasi_text"
-                    style="@style/Widget.Material3.Button.OutlinedButton"
-                    app:strokeColor="@color/ikasi_text"
-                    app:strokeWidth="1dp"
-                    app:cornerRadius="8dp" />
+                    android:text="📖 32 today"
+                    android:textSize="16sp"
+                    android:textColor="@color/museolingo_text_secondary" />
             </LinearLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <!-- Main Feature Card (Puzzle) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/puzzleCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@android:color/white">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <!-- Puzzle View (Landscape) -->
+                    <com.ichi2.anki.ui.museum.PaintingPuzzleView
+                        android:id="@+id/paintingView"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintDimensionRatio="3:2" />
+
+                    <!-- Bottom Controls Container -->
+                    <LinearLayout
+                        android:id="@+id/controlsContainer"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="12dp"
+                        android:gravity="center_vertical"
+                        app:layout_constraintTop_toBottomOf="@id/paintingView"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <!-- Progress Bar (Left) -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <ProgressBar
+                                android:id="@+id/progressBar"
+                                android:layout_width="match_parent"
+                                android:layout_height="4dp"
+                                android:progressTint="@color/museolingo_amber"
+                                android:max="100"
+                                android:progress="37"
+                                style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+
+                            <TextView
+                                android:id="@+id/progressText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="37/100"
+                                android:textSize="12sp"
+                                android:textColor="@color/museolingo_text_secondary"
+                                android:layout_marginTop="4dp" />
+                        </LinearLayout>
+
+                        <!-- Peek Button (Right) -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/peekButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:text="👁 Peek"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/white"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:layout_marginStart="16dp"
+                            app:backgroundTint="#80000000"
+                            app:cornerRadius="18dp" />
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Caption below card -->
+            <TextView
+                android:id="@+id/captionText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Basque Countryside"
+                android:textSize="14sp"
+                android:textColor="@color/museolingo_text_secondary"
+                android:fontFamily="serif"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:paddingBottom="24dp" />
+
+            <!-- Activity Heatmap Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="8dp">
+
+                <!-- Year Header -->
+                <TextView
+                    android:id="@+id/heatmapYear"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="2026"
+                    android:textSize="18sp"
+                    android:textColor="@color/museolingo_text"
+                    android:fontFamily="serif"
+                    android:gravity="center"
+                    android:paddingBottom="4dp" />
+
+                <!-- Subheader -->
+                <TextView
+                    android:id="@+id/heatmapSubheader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="517 reviews   19 days"
+                    android:textSize="13sp"
+                    android:textColor="@color/museolingo_text_secondary"
+                    android:gravity="center"
+                    android:paddingBottom="16dp" />
+
+                <!-- Heatmap View -->
+                <com.ichi2.anki.ui.museum.HeatmapView
+                    android:id="@+id/heatmapView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Floating Study Button -->
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/studyButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
+    <!-- Bottom CTA Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/reviewButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom"
         android:layout_margin="16dp"
-        android:text="Ikasi"
-        android:textSize="18sp"
+        android:text="📖  Review Cards"
+        android:textSize="16sp"
         android:textColor="@android:color/white"
-        app:icon="@drawable/ic_play"
-        app:iconTint="@android:color/white"
-        app:backgroundTint="@color/ikasi_amber"
-        app:elevation="6dp" />
+        android:textStyle="bold"
+        app:backgroundTint="@color/museolingo_amber"
+        app:cornerRadius="28dp"
+        app:icon="@android:drawable/ic_notification_overlay"
+        app:iconGravity="end"
+        app:iconTint="@android:color/white" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
