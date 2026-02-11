@@ -26,9 +26,9 @@ class PaintingPuzzleView(
     attrs: AttributeSet? = null,
 ) : View(context, attrs) {
     companion object {
-        const val COLS = 25
-        const val ROWS = 20
-        const val TOTAL_PIECES = COLS * ROWS // 500
+        const val COLS = 10
+        const val ROWS = 10
+        const val TOTAL_PIECES = COLS * ROWS // 100
 
         // Puzzle piece tab configuration
         private const val TAB_SIZE = 0.2f // Tab size relative to piece size
@@ -146,6 +146,7 @@ class PaintingPuzzleView(
         painting = bitmap
         scaledBitmap = null
         piecePathCache.clear()
+        requestLayout()
         invalidate()
     }
 
@@ -180,8 +181,13 @@ class PaintingPuzzleView(
         heightMeasureSpec: Int,
     ) {
         val width = MeasureSpec.getSize(widthMeasureSpec)
-        // Landscape aspect ratio (3:2) for countryside image
-        val height = (width * 2f / 3f).toInt()
+        val bmp = painting
+        val height =
+            if (bmp != null && bmp.width > 0) {
+                (width * bmp.height.toFloat() / bmp.width).toInt()
+            } else {
+                (width * 2f / 3f).toInt() // fallback 3:2 until bitmap loads
+            }
         setMeasuredDimension(width, height)
     }
 

@@ -2,12 +2,14 @@ package com.ichi2.anki.ui.museum
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ichi2.anki.CollectionManager.withCol
-import com.ichi2.anki.R
 import com.ichi2.anki.libanki.DeckNameId
+import com.ichi2.anki.model.art.ArtPiece
+import com.ichi2.anki.model.art.getRevealedIndicesList
+import com.ichi2.anki.services.ArtAssetService
+import com.ichi2.anki.services.ArtProgressRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,17 +21,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-/**
- * ViewModel for the Museum home screen.
- *
- * Manages UI state and handles business logic for:
- * - Loading and scaling the Mona Lisa painting
- * - Tracking unlocked puzzle pieces
- * - Managing study streak and extra lives
- * - Emitting events for animations and celebrations
- *
- * Uses MVVM pattern with StateFlow following ReviewerViewModel.kt pattern.
- */
 class MuseumViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(MuseumUiState())
     val uiState: StateFlow<MuseumUiState> = _uiState.asStateFlow()
@@ -37,27 +28,11 @@ class MuseumViewModel : ViewModel() {
     private val _events = MutableSharedFlow<MuseumEvent>()
     val events: SharedFlow<MuseumEvent> = _events.asSharedFlow()
 
-    /**
-     * Loads all museum data from persistence and resources.
-     * Should be called once during Activity/Fragment initialization.
-     */
     fun loadMuseumData(context: Context) {
         viewModelScope.launch {
-            // Load painting from resources on background thread
-            val painting =
-                withContext(Dispatchers.IO) {
-                    BitmapFactory.decodeResource(
-                        context.resources,
-                        R.drawable.basque_countryside,
-                    )
-                }
-
-            // Load persisted data
-            val unlockedPieces = MuseumPersistence.getUnlockedPieces(context)
             val streakDays = MuseumPersistence.getStreakDays(context)
             val extraLives = MuseumPersistence.getExtraLives(context)
 
-            // Load current deck name
             val currentDeckName =
                 try {
                     val selectedDeckId = MuseumPersistence.getSelectedDeckId(context)
@@ -72,32 +47,119 @@ class MuseumViewModel : ViewModel() {
                     "Default"
                 }
 
-            // Update UI state
             _uiState.update {
                 it.copy(
-                    painting = painting,
-                    unlockedPieces = unlockedPieces,
                     streakDays = streakDays,
                     extraLives = extraLives,
-                    progressText = "${unlockedPieces.size} / 500 pieces",
                     currentDeckName = currentDeckName,
+                )
+            }
+
+            // Load gallery data
+            loadGalleryData(context)
+        }
+    }
+
+    fun loadGalleryData(context: Context) {
+        viewModelScope.launch {
+            val artService = ArtAssetService(context)
+            val repo = ArtProgressRepository(context)
+
+            val catalog = withContext(Dispatchers.IO) { artService.loadArtCatalog() }
+            if (catalog.isEmpty()) return@launch
+
+            val currentProgress = withContext(Dispatchers.IO) { repo.getCurrentProgress() }
+            val completedGallery = withContext(Dispatchers.IO) { repo.getCompletedGallery() }
+            val completedIds = completedGallery.map { it.artPieceId }.toSet()
+            val activeArtPieceId = MuseumPersistence.getActiveArtPieceId(context)
+
+            var activePageIndex = 0
+            var activePainting: Bitmap? = null
+            var activeTitle = ""
+
+            val galleryItems =
+                catalog
+                    .map { artPiece ->
+                        val state =
+                            when {
+                                artPiece.id == activeArtPieceId && currentProgress != null &&
+                                    currentProgress.artPieceId == artPiece.id -> {
+                                    activeTitle = artPiece.title
+                                    ArtPieceState.ACTIVE
+                                }
+                                artPiece.id in completedIds -> ArtPieceState.COMPLETED
+                                else -> ArtPieceState.LOCKED
+                            }
+
+                        val unlockedPieces =
+                            if (state == ArtPieceState.ACTIVE && currentProgress != null) {
+                                currentProgress.getRevealedIndicesList().toSet()
+                            } else {
+                                emptySet()
+                            }
+
+                        val progressPercent =
+                            if (state == ArtPieceState.ACTIVE && currentProgress != null) {
+                                if (currentProgress.piecesTotal > 0) {
+                                    (currentProgress.piecesRevealed * 100) / currentProgress.piecesTotal
+                                } else {
+                                    0
+                                }
+                            } else if (state == ArtPieceState.COMPLETED) {
+                                100
+                            } else {
+                                0
+                            }
+
+                        GalleryArtItem(
+                            artPiece = artPiece,
+                            state = state,
+                            unlockedPieces = unlockedPieces,
+                            progressPercent = progressPercent,
+                        )
+                    }.sortedBy {
+                        when (it.state) {
+                            ArtPieceState.ACTIVE -> 0
+                            ArtPieceState.COMPLETED -> 1
+                            ArtPieceState.LOCKED -> 2
+                        }
+                    }
+
+            activePageIndex = 0
+
+            // Load active piece painting bitmap
+            val activeItem = galleryItems.find { it.state == ArtPieceState.ACTIVE }
+            if (activeItem != null) {
+                val filename = artService.extractFilenameFromUri(activeItem.artPiece.imageUrlFull)
+                activePainting = withContext(Dispatchers.IO) { artService.loadArtBitmap(filename) }
+            }
+
+            val savedPosition = MuseumPersistence.getGalleryPosition(context)
+            val initialPage = if (savedPosition in galleryItems.indices) savedPosition else activePageIndex
+
+            _uiState.update {
+                it.copy(
+                    painting = activePainting,
+                    galleryItems = galleryItems,
+                    activePageIndex = initialPage,
+                    currentArtTitle = activeTitle,
+                    unlockedPieces = activeItem?.unlockedPieces ?: emptySet(),
+                    progressText =
+                        if (activeItem != null) {
+                            "${activeItem.unlockedPieces.size} / ${activeItem.artPiece.puzzlePiecesTotal} pieces"
+                        } else {
+                            "0 / 100 pieces"
+                        },
                 )
             }
         }
     }
 
-    /**
-     * Loads all available decks from the collection.
-     * @return List of deck names and IDs
-     */
     suspend fun loadAllDecks(): List<DeckNameId> =
         withCol {
             decks.allNamesAndIds(includeFiltered = false)
         }
 
-    /**
-     * Sets the current deck and persists the selection.
-     */
     fun setCurrentDeck(
         context: Context,
         deckId: Long,
@@ -114,11 +176,6 @@ class MuseumViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Unlocks a specific puzzle piece and emits an event for animation.
-     * @param context Android context for persistence
-     * @param pieceIndex The index of the piece to unlock (0-499)
-     */
     fun unlockPiece(
         context: Context,
         pieceIndex: Int,
@@ -129,72 +186,65 @@ class MuseumViewModel : ViewModel() {
             if (wasNewlyUnlocked) {
                 val updatedPieces = MuseumPersistence.getUnlockedPieces(context)
 
-                // Update state
                 _uiState.update {
                     it.copy(
                         unlockedPieces = updatedPieces,
-                        progressText = "${updatedPieces.size} / 500 pieces",
+                        progressText = "${updatedPieces.size} / 100 pieces",
                     )
                 }
 
-                // Emit animation event
                 _events.emit(MuseumEvent.PieceUnlocked(pieceIndex))
 
-                // Check for completion
-                if (updatedPieces.size == 500) {
+                if (updatedPieces.size == 100) {
                     _events.emit(MuseumEvent.PuzzleCompleted)
                 }
             }
         }
     }
 
-    /**
-     * Refreshes the UI state from persistence.
-     * Useful when returning to the Museum after studying.
-     */
     fun refreshData(context: Context) {
         viewModelScope.launch {
-            val unlockedPieces = MuseumPersistence.getUnlockedPieces(context)
             val streakDays = MuseumPersistence.getStreakDays(context)
             val extraLives = MuseumPersistence.getExtraLives(context)
 
             _uiState.update {
                 it.copy(
-                    unlockedPieces = unlockedPieces,
                     streakDays = streakDays,
                     extraLives = extraLives,
-                    progressText = "${unlockedPieces.size} / 500 pieces",
                 )
             }
+
+            // Reload gallery items to reflect progress changes
+            loadGalleryData(context)
         }
     }
 }
 
-/**
- * UI state for the Museum screen.
- */
 data class MuseumUiState(
     val painting: Bitmap? = null,
     val unlockedPieces: Set<Int> = emptySet(),
     val streakDays: Int = 0,
     val extraLives: Int = 3,
-    val progressText: String = "0 / 500 pieces",
+    val progressText: String = "0 / 100 pieces",
     val currentDeckName: String = "Default",
+    val galleryItems: List<GalleryArtItem> = emptyList(),
+    val activePageIndex: Int = 0,
+    val currentArtTitle: String = "",
 )
 
-/**
- * One-time events for animations and UI effects.
- */
 sealed class MuseumEvent {
-    /**
-     * Emitted when a puzzle piece should be animated as unlocked.
-     */
     data class PieceUnlocked(
         val pieceIndex: Int,
     ) : MuseumEvent()
 
-    /**
-     * Emitted when all 500 pieces are unlocked.
-     */
     object PuzzleCompleted : MuseumEvent()
 }
+
+data class GalleryArtItem(
+    val artPiece: ArtPiece,
+    val state: ArtPieceState,
+    val unlockedPieces: Set<Int> = emptySet(),
+    val progressPercent: Int = 0,
+)
+
+enum class ArtPieceState { ACTIVE, COMPLETED, LOCKED }

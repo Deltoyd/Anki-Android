@@ -28,6 +28,10 @@ object MuseumPersistence {
     private const val KEY_LAST_STUDY_DATE = "last_study_date"
     private const val KEY_EXTRA_LIVES = "extra_lives"
     private const val KEY_SELECTED_DECK_ID = "selected_deck_id"
+    private const val KEY_SELECTED_TOPIC_ID = "selected_topic_id"
+    private const val KEY_ACTIVE_ART_PIECE_ID = "active_art_piece_id"
+    private const val KEY_GALLERY_POSITION = "gallery_position"
+    private const val KEY_ONBOARDING_COMPLETE = "onboarding_complete"
 
     private const val DEFAULT_EXTRA_LIVES = 3
 
@@ -185,6 +189,59 @@ object MuseumPersistence {
     ) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit().putLong(KEY_SELECTED_DECK_ID, deckId).apply()
+    }
+
+    fun getSelectedTopicId(context: Context): Long? {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val id = prefs.getLong(KEY_SELECTED_TOPIC_ID, -1L)
+        return if (id == -1L) null else id
+    }
+
+    fun setSelectedTopicId(
+        context: Context,
+        topicId: Long,
+    ) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putLong(KEY_SELECTED_TOPIC_ID, topicId).apply()
+    }
+
+    fun getActiveArtPieceId(context: Context): String? {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getString(KEY_ACTIVE_ART_PIECE_ID, null)
+    }
+
+    fun setActiveArtPieceId(
+        context: Context,
+        artPieceId: String,
+    ) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putString(KEY_ACTIVE_ART_PIECE_ID, artPieceId).apply()
+    }
+
+    fun getGalleryPosition(context: Context): Int {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getInt(KEY_GALLERY_POSITION, 0)
+    }
+
+    fun setGalleryPosition(
+        context: Context,
+        position: Int,
+    ) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putInt(KEY_GALLERY_POSITION, position).apply()
+    }
+
+    fun isOnboardingComplete(context: Context): Boolean {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getBoolean(KEY_ONBOARDING_COMPLETE, false)
+    }
+
+    fun setOnboardingComplete(
+        context: Context,
+        complete: Boolean,
+    ) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putBoolean(KEY_ONBOARDING_COMPLETE, complete).apply()
     }
 
     /**

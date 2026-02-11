@@ -450,5 +450,25 @@ opening the system text to speech settings fails">Failed to open text to speech 
 
     <!-- Whitespace is OK -->
     <string name="list_separator" comment="The character and spacing to display between elements of a list, for example ', ' in 'Apple, Banana, Cherry" tools:ignore="TranslationTypo">, </string>
+
+    <!-- Art Piece Puzzle Feature -->
+    <string name="choose_art_piece">Choose an Art Piece</string>
+    <string name="art_thumbnail">Art thumbnail</string>
+    <string name="art_gallery">Art Gallery</string>
+    <string name="art_piece_completed">Art Piece Completed!</string>
+    <string name="art_piece_completed_message">You\'ve revealed: %s</string>
+    <string name="choose_next_art">Choose Next Art</string>
+    <string name="view_gallery">View Gallery</string>
+    <string name="completed_at">Completed on %s</string>
+
+    <!-- Onboarding + Gallery -->
+    <string name="onboarding_topic_title">What are you learning?</string>
+    <string name="onboarding_topic_subtitle">Choose your study topic</string>
+    <string name="onboarding_art_title">Choose your first masterpiece</string>
+    <string name="art_locked">Locked</string>
+    <string name="art_active">In Progress</string>
+    <string name="art_completed_label">Completed</string>
+    <string name="start_studying_to_unlock">Start studying to unlock</string>
+    <string name="art_preview_button">Preview Art</string>
 </resources>
 

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<com.google.android.material.card.MaterialCardView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Puzzle View (ACTIVE state) — height from bitmap aspect ratio -->
+        <com.ichi2.anki.ui.museum.PaintingPuzzleView
+            android:id="@+id/paintingView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <!-- Full Image (COMPLETED state) — natural aspect ratio -->
+        <ImageView
+            android:id="@+id/completedImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:visibility="gone"
+            android:contentDescription="@string/art_thumbnail" />
+
+        <!-- Locked overlay (LOCKED state) -->
+        <FrameLayout
+            android:id="@+id/lockedOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/lockedImage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:alpha="0.3"
+                android:contentDescription="@string/art_locked" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@android:drawable/ic_lock_lock"
+                    android:contentDescription="@string/art_locked"
+                    app:tint="@color/museolingo_text_secondary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/art_locked"
+                    android:textSize="14sp"
+                    android:textColor="@color/museolingo_text_secondary"
+                    android:paddingTop="8dp" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- Bottom Controls -->
+        <LinearLayout
+            android:id="@+id/controlsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:gravity="center_vertical">
+
+            <!-- Progress (ACTIVE only) -->
+            <LinearLayout
+                android:id="@+id/progressContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    android:progressTint="@color/museolingo_amber"
+                    android:max="100"
+                    android:progress="0"
+                    style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+
+                <TextView
+                    android:id="@+id/progressText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="@color/museolingo_text_secondary"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <!-- Peek Button (ACTIVE only) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/peekButton"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Peek"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:visibility="gone"
+                app:backgroundTint="#80000000"
+                app:cornerRadius="18dp" />
+
+            <!-- Completed badge (COMPLETED only) -->
+            <TextView
+                android:id="@+id/completedBadge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/art_completed_label"
+                android:textSize="14sp"
+                android:textColor="#4CAF50"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:visibility="gone" />
+
+            <!-- Locked text (LOCKED only) -->
+            <TextView
+                android:id="@+id/lockedText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/start_studying_to_unlock"
+                android:textSize="13sp"
+                android:textColor="@color/museolingo_text_secondary"
+                android:gravity="center"
+                android:visibility="gone" />
+        </LinearLayout>
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
+
+</FrameLayout>

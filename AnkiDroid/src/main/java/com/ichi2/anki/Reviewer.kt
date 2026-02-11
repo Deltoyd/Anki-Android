@@ -43,7 +43,9 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.annotation.CheckResult
 import androidx.annotation.DrawableRes
 import androidx.annotation.IntDef
@@ -56,7 +58,9 @@ import androidx.appcompat.widget.TooltipCompat
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import anki.frontend.SetSchedulingStatesRequest
 import anki.scheduler.CardAnswer.Rating
 import com.google.android.material.color.MaterialColors
@@ -112,11 +116,13 @@ import com.ichi2.anki.scheduling.SetDueDateDialog
 import com.ichi2.anki.scheduling.registerOnForgetHandler
 import com.ichi2.anki.servicelayer.NoteService.isMarked
 import com.ichi2.anki.servicelayer.NoteService.toggleMark
+import com.ichi2.anki.services.ArtAssetService
 import com.ichi2.anki.settings.Prefs
 import com.ichi2.anki.settings.enums.DayTheme
 import com.ichi2.anki.snackbar.showSnackbar
 import com.ichi2.anki.ui.internationalization.toSentenceCase
 import com.ichi2.anki.ui.museum.CasinoRewardEngine
+import com.ichi2.anki.ui.museum.MuseumPersistence
 import com.ichi2.anki.ui.museum.RewardOverlayView
 import com.ichi2.anki.ui.windows.reviewer.ReviewerFragment
 import com.ichi2.anki.utils.ext.cardStatsNoCardClean
@@ -128,6 +134,8 @@ import com.ichi2.anki.utils.ext.setUserFlagForCards
 import com.ichi2.anki.utils.ext.showDialogFragment
 import com.ichi2.anki.utils.navBarNeedsScrim
 import com.ichi2.anki.utils.remainingTime
+import com.ichi2.anki.viewmodels.ArtProgressViewModelSimple
+import com.ichi2.anki.viewmodels.ArtProgressViewModelSimpleFactory
 import com.ichi2.themes.Themes
 import com.ichi2.themes.Themes.currentTheme
 import com.ichi2.utils.HandlerUtils.executeFunctionWithDelay
@@ -143,8 +151,11 @@ import com.ichi2.utils.positiveButton
 import com.ichi2.utils.show
 import com.ichi2.utils.tintOverflowMenuIcons
 import com.ichi2.utils.title
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import kotlin.coroutines.resume
 
@@ -233,6 +244,11 @@ open class Reviewer :
     private var rewardOverlay: RewardOverlayView? = null
     private var comboText: TextView? = null
 
+    // Art Progress System
+    private val artProgressViewModel: ArtProgressViewModelSimple by viewModels {
+        ArtProgressViewModelSimpleFactory(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         if (showedActivityFailedScreen(savedInstanceState)) {
             return
@@ -251,6 +267,11 @@ open class Reviewer :
         rewardOverlay = findViewById(R.id.reward_overlay)
         comboText = findViewById(R.id.combo_text)
         processor = BindingMap(sharedPrefs(), ViewerCommand.entries, this)
+
+        // Initialize art progress system
+        observeArtProgress()
+        findViewById<com.google.android.material.button.MaterialButton>(R.id.art_preview_button)
+            ?.setOnClickListener { showArtPreviewDialog() }
         if (sharedPrefs().getString("answerButtonPosition", "bottom") == "bottom" && !navBarNeedsScrim) {
             setNavigationBarColor(R.attr.showAnswerColor)
         }
@@ -1257,6 +1278,9 @@ open class Reviewer :
         // Unlock puzzle piece in Museum
         unlockRandomPuzzlePiece()
 
+        // Reveal next art puzzle piece
+        artProgressViewModel.revealNextPiece()
+
         // showing the timebox reached dialog if the timebox is reached
         val timebox = withCol { timeboxReached() }
         if (timebox != null) {
@@ -1891,5 +1915,107 @@ open class Reviewer :
         } else {
             comboText?.visibility = View.GONE
         }
+    }
+
+    // ===== Art Progress System Methods =====
+
+    /**
+     * Observe art progress StateFlows for reactive UI updates
+     */
+    private fun observeArtProgress() {
+        // Observe current progress
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                artProgressViewModel.currentProgress.collect { state ->
+                    // If no active progress, auto-load the piece selected during onboarding
+                    if (state == null) {
+                        autoLoadSelectedArtPiece()
+                    }
+                }
+            }
+        }
+
+        // Observe completion events
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                artProgressViewModel.error.collect { message ->
+                    if (message.startsWith("COMPLETION:")) {
+                        val artTitle = message.substringAfter("COMPLETION:")
+                        showCompletionDialog(artTitle)
+                    } else {
+                        Toast.makeText(this@Reviewer, message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Auto-load the art piece selected during onboarding (no dialog).
+     */
+    private fun autoLoadSelectedArtPiece() {
+        val activeArtId = MuseumPersistence.getActiveArtPieceId(this) ?: return
+        lifecycleScope.launch {
+            val allPieces = artProgressViewModel.getAvailableArtPieces()
+            val selected =
+                allPieces.firstOrNull { it.id == activeArtId }
+                    ?: allPieces.firstOrNull()
+                    ?: return@launch
+            artProgressViewModel.selectArtPiece(selected)
+        }
+    }
+
+    /**
+     * Show a preview dialog with the current art piece image and metadata.
+     */
+    private fun showArtPreviewDialog() {
+        val state = artProgressViewModel.currentProgress.value ?: return
+        val artPiece = state.artPiece
+
+        lifecycleScope.launch {
+            val artService = ArtAssetService(this@Reviewer)
+            val filename = artService.extractFilenameFromUri(artPiece.imageUrlFull)
+            val bitmap = withContext(Dispatchers.IO) { artService.loadArtBitmap(filename) }
+
+            val imageView =
+                ImageView(this@Reviewer).apply {
+                    setImageBitmap(bitmap)
+                    adjustViewBounds = true
+                    scaleType = ImageView.ScaleType.FIT_CENTER
+                    val pad = (16 * resources.displayMetrics.density).toInt()
+                    setPadding(pad, pad, pad, 0)
+                }
+
+            val info =
+                buildString {
+                    append(artPiece.title)
+                    if (!artPiece.artist.isNullOrBlank()) append("\n${artPiece.artist}")
+                    if (!artPiece.dateCreated.isNullOrBlank()) append("\n${artPiece.dateCreated}")
+                    val dept = artPiece.department
+                    if (!dept.isNullOrBlank() && dept != "Proof of Concept Collection") append("\n$dept")
+                    append("\n\n${state.piecesRevealed} / ${state.piecesTotal} pieces revealed")
+                }
+
+            AlertDialog
+                .Builder(this@Reviewer)
+                .setView(imageView)
+                .setMessage(info)
+                .setPositiveButton(android.R.string.ok) { dialog, _ -> dialog.dismiss() }
+                .show()
+        }
+    }
+
+    /**
+     * Show completion dialog when art piece is finished.
+     */
+    private fun showCompletionDialog(artTitle: String) {
+        AlertDialog
+            .Builder(this)
+            .setTitle(R.string.art_piece_completed)
+            .setMessage(getString(R.string.art_piece_completed_message, artTitle))
+            .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                dialog.dismiss()
+            }.setCancelable(false)
+            .show()
     }
 }

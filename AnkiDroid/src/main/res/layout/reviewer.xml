@@ -39,6 +39,19 @@
             android:layout_centerHorizontal="true"
             android:layout_above="@+id/bottom_area_layout"/>
 
+        <!-- Art Preview Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/art_preview_button"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_above="@+id/bottom_area_layout"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="4dp"
+            android:text="@string/art_preview_button"
+            android:textSize="12sp" />
+
         <include layout="@layout/reviewer_answer_buttons"
             tools:layout_width="match_parent"
             tools:layout_height="wrap_content"

@@ -1,0 +1,107 @@
+[
+    {
+        "id": "art_001",
+        "filename": "Screenshot 2026-02-10 at 11.23.47.png",
+        "title": "Classical Landscape",
+        "artist": "Master Collection",
+        "description": "A serene landscape painting"
+    },
+    {
+        "id": "art_002",
+        "filename": "Screenshot 2026-02-10 at 11.24.14.png",
+        "title": "Portrait Study",
+        "artist": "Master Collection",
+        "description": "Classical portrait artwork"
+    },
+    {
+        "id": "art_003",
+        "filename": "Screenshot 2026-02-10 at 11.28.17.png",
+        "title": "Renaissance Composition",
+        "artist": "Master Collection",
+        "description": "Renaissance era artwork"
+    },
+    {
+        "id": "art_004",
+        "filename": "Screenshot 2026-02-10 at 11.28.49.png",
+        "title": "Baroque Masterpiece",
+        "artist": "Master Collection",
+        "description": "Baroque period painting"
+    },
+    {
+        "id": "art_005",
+        "filename": "Screenshot 2026-02-10 at 11.29.10.png",
+        "title": "Still Life Study",
+        "artist": "Master Collection",
+        "description": "Classical still life"
+    },
+    {
+        "id": "art_006",
+        "filename": "Screenshot 2026-02-10 at 11.29.50.png",
+        "title": "Maritime Scene",
+        "artist": "Master Collection",
+        "description": "Maritime painting"
+    },
+    {
+        "id": "art_007",
+        "filename": "Screenshot 2026-02-10 at 11.30.15.png",
+        "title": "Historical Scene",
+        "artist": "Master Collection",
+        "description": "Historical artwork"
+    },
+    {
+        "id": "art_008",
+        "filename": "Screenshot 2026-02-10 at 11.30.52.png",
+        "title": "Pastoral Landscape",
+        "artist": "Master Collection",
+        "description": "Pastoral scene"
+    },
+    {
+        "id": "art_009",
+        "filename": "Screenshot 2026-02-10 at 11.31.09.png",
+        "title": "Religious Composition",
+        "artist": "Master Collection",
+        "description": "Religious artwork"
+    },
+    {
+        "id": "art_010",
+        "filename": "Screenshot 2026-02-10 at 11.31.32.png",
+        "title": "Urban Scene",
+        "artist": "Master Collection",
+        "description": "Urban landscape"
+    },
+    {
+        "id": "art_011",
+        "filename": "Screenshot 2026-02-10 at 11.31.57.png",
+        "title": "Mythological Scene",
+        "artist": "Master Collection",
+        "description": "Mythological artwork"
+    },
+    {
+        "id": "art_012",
+        "filename": "Screenshot 2026-02-10 at 11.33.27.png",
+        "title": "Genre Painting",
+        "artist": "Master Collection",
+        "description": "Genre scene"
+    },
+    {
+        "id": "art_013",
+        "filename": "Screenshot 2026-02-10 at 11.33.55.png",
+        "title": "Architectural Study",
+        "artist": "Master Collection",
+        "description": "Architectural composition"
+    },
+    {
+        "id": "art_014",
+        "filename": "Screenshot 2026-02-10 at 11.34.48.png",
+        "title": "Nature Study",
+        "artist": "Master Collection",
+        "description": "Natural scene"
+    },
+    {
+        "id": "art_015",
+        "filename": "Screenshot 2026-02-10 at 11.36.35.png",
+        "title": "Abstract Composition",
+        "artist": "Master Collection",
+        "description": "Abstract artwork"
+    }
+]

@@ -120,6 +120,12 @@
             android:name="com.ichi2.anki.MuseumActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
+            android:name=".ui.onboarding.TopicSelectionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.onboarding.ArtSelectionActivity"
+            android:exported="false" />
+        <activity
             android:name="com.ichi2.anki.IntentHandler"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
@@ -503,6 +509,12 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/download_deck"
             android:theme="@style/Theme.MaterialComponents.NoActionBar" />
+
+        <activity
+            android:name=".ui.art.ArtGalleryActivity"
+            android:label="@string/art_gallery"
+            android:exported="false"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
 
         <activity android:name=".IntroductionActivity"
             android:exported="false"

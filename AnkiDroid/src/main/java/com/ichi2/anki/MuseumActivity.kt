@@ -4,89 +4,139 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.ichi2.anki.databinding.ActivityMuseumBinding
+import com.ichi2.anki.services.ArtAssetService
+import com.ichi2.anki.ui.museum.GalleryPagerAdapter
 import com.ichi2.anki.ui.museum.MuseumEvent
 import com.ichi2.anki.ui.museum.MuseumPersistence
 import com.ichi2.anki.ui.museum.MuseumViewModel
+import com.ichi2.anki.ui.museum.PageIndicatorHelper
 import com.ichi2.anki.ui.museum.toDateKey
+import com.ichi2.anki.ui.onboarding.TopicSelectionActivity
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Random
 
-/**
- * MuseoLingo home screen - the main entry point of the app.
- *
- * Displays:
- *   • Top navigation with language selector, MuseoLingo title, and menu
- *   • Stats row showing streak and today's cards
- *   • Landscape puzzle card with Basque countryside image
- *   • Progress bar and peek button
- *   • Activity heatmap with year header
- *   • Bottom review cards button with due count
- *
- * Design: Clean, editorial learning app aesthetic with amber accents
- */
 class MuseumActivity : AnkiActivity() {
     private lateinit var binding: ActivityMuseumBinding
     private val viewModel: MuseumViewModel by viewModels()
+    private lateinit var galleryAdapter: GalleryPagerAdapter
+
+    /** Ensures the cinematic break animation plays only once per activity creation. */
+    private var hasPlayedBreakAnimation = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Onboarding check
+        if (!MuseumPersistence.isOnboardingComplete(this)) {
+            startActivity(Intent(this, TopicSelectionActivity::class.java))
+            finish()
+            return
+        }
+
         binding = ActivityMuseumBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupGallery()
         setupObservers()
         setupButtons()
         setupStats()
         setupHeatmap()
 
-        // Load initial data (now uses basque_countryside.jpg)
         viewModel.loadMuseumData(this)
     }
 
     override fun onResume() {
         super.onResume()
-        // Refresh data when returning from Reviewer
-        viewModel.refreshData(this)
-        updateStats()
+        if (::binding.isInitialized) {
+            viewModel.refreshData(this)
+            updateStats()
+        }
     }
 
-    /**
-     * Setup lifecycle observers for StateFlow and SharedFlow.
-     */
+    private fun setupGallery() {
+        val artService = ArtAssetService(this)
+        galleryAdapter =
+            GalleryPagerAdapter(artService) { position ->
+                showPeekPreview(position)
+            }
+        binding.galleryPager.adapter = galleryAdapter
+        binding.galleryPager.offscreenPageLimit = 1
+
+        binding.galleryPager.registerOnPageChangeCallback(
+            object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    val items = viewModel.uiState.value.galleryItems
+                    if (position in items.indices) {
+                        val item = items[position]
+                        binding.captionText.text = item.artPiece.title
+                        PageIndicatorHelper.updateCurrentPage(
+                            binding.pageIndicator,
+                            items,
+                            position,
+                        )
+                        MuseumPersistence.setGalleryPosition(this@MuseumActivity, position)
+                    }
+                }
+            },
+        )
+    }
+
     private fun setupObservers() {
-        // Observe UI state
         lifecycleScope.launch {
             viewModel.uiState.collect { state ->
-                // Update painting
-                state.painting?.let { painting ->
-                    binding.paintingView.setPainting(painting)
+                if (state.galleryItems.isNotEmpty()) {
+                    galleryAdapter.submitList(state.galleryItems)
+
+                    // Update painting for active item
+                    state.painting?.let { painting ->
+                        galleryAdapter.updateActivePainting(painting)
+
+                        // Play the cinematic puzzle break animation once
+                        if (!hasPlayedBreakAnimation) {
+                            hasPlayedBreakAnimation = true
+                            binding.puzzleBreakOverlay.startAnimation(painting) {
+                                // Animation complete — gallery is now visible underneath
+                            }
+                        }
+                    }
+
+                    // Set initial page
+                    if (binding.galleryPager.currentItem != state.activePageIndex &&
+                        state.activePageIndex in state.galleryItems.indices
+                    ) {
+                        binding.galleryPager.setCurrentItem(state.activePageIndex, false)
+                    }
+
+                    // Update indicators
+                    PageIndicatorHelper.setupIndicators(
+                        binding.pageIndicator,
+                        state.galleryItems,
+                        binding.galleryPager.currentItem,
+                    )
+
+                    // Update caption
+                    val currentPos = binding.galleryPager.currentItem
+                    if (currentPos in state.galleryItems.indices) {
+                        binding.captionText.text = state.galleryItems[currentPos].artPiece.title
+                    }
                 }
-
-                // Update unlocked pieces
-                binding.paintingView.setUnlockedPieces(state.unlockedPieces)
-
-                // Update progress (out of 500 pieces)
-                val progress = (state.unlockedPieces.size * 100) / 500
-                binding.progressBar.progress = progress
-                binding.progressText.text = "${state.unlockedPieces.size}/500"
 
                 // Update deck selector button
                 binding.languageSelector.text = state.currentDeckName
             }
         }
 
-        // Observe events
         lifecycleScope.launch {
             viewModel.events.collect { event ->
                 when (event) {
                     is MuseumEvent.PieceUnlocked -> {
-                        // Trigger piece unlock animation
-                        binding.paintingView.animateUnlock(event.pieceIndex)
+                        // The active page's PaintingPuzzleView will be updated via adapter
                     }
                     is MuseumEvent.PuzzleCompleted -> {
-                        // Show completion celebration dialog
                         showCompletionDialog()
                     }
                 }
@@ -94,38 +144,25 @@ class MuseumActivity : AnkiActivity() {
         }
     }
 
-    /**
-     * Setup stats row (streak and today's cards).
-     */
     private fun setupStats() {
         updateStats()
     }
 
-    /**
-     * Update stats display.
-     */
     private fun updateStats() {
         val streakDays = MuseumPersistence.getStreakDays(this)
         binding.streakStat.text = "🔥 $streakDays"
 
-        // TODO: Get actual cards reviewed today from collection
-        val cardsToday = 0 // Placeholder
+        val cardsToday = 0
         binding.todayStat.text = "📖 $cardsToday today"
     }
 
-    /**
-     * Setup heatmap with activity data.
-     */
     private fun setupHeatmap() {
-        // Set current year
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
         binding.heatmapYear.text = currentYear.toString()
 
-        // Use existing mock data generation for now
         val activityData = generateMockActivityData()
         binding.heatmapView.setActivityData(activityData)
 
-        // Calculate total reviews and active days
         val totalReviews = activityData.values.sum()
         val activeDays = activityData.size
         binding.heatmapSubheader.text = "$totalReviews reviews   $activeDays days"
@@ -136,34 +173,33 @@ class MuseumActivity : AnkiActivity() {
         }
     }
 
-    /**
-     * Setup button click listeners.
-     */
     private fun setupButtons() {
-        // Deck selector
         binding.languageSelector.setOnClickListener {
             showDeckSelectorDialog()
         }
 
-        // Menu button
         binding.menuButton.setOnClickListener {
             startActivity(Intent(this, DeckPicker::class.java))
         }
 
-        // Peek button → Show full painting for 3 seconds
-        binding.peekButton.setOnClickListener {
-            showPeekPreview()
-        }
-
-        // Review Cards button → Launch Reviewer
         binding.reviewButton.setOnClickListener {
             startActivity(Intent(this, Reviewer::class.java))
         }
     }
 
-    /**
-     * Shows a dialog allowing the user to select which deck to study.
-     */
+    private fun showPeekPreview(position: Int) {
+        // Find the PaintingPuzzleView in the current ViewPager2 page
+        val recyclerView = binding.galleryPager.getChildAt(0) as? androidx.recyclerview.widget.RecyclerView
+        val viewHolder = recyclerView?.findViewHolderForAdapterPosition(position)
+        val paintingView = viewHolder?.itemView?.findViewById<com.ichi2.anki.ui.museum.PaintingPuzzleView>(R.id.paintingView)
+
+        paintingView?.let {
+            it.enablePeekMode()
+            showThemedToast(this, "Peeking for 3 seconds...", false)
+            it.postDelayed({ it.disablePeekMode() }, 3000)
+        }
+    }
+
     private fun showDeckSelectorDialog() {
         lifecycleScope.launch {
             val decks = viewModel.loadAllDecks()
@@ -173,7 +209,6 @@ class MuseumActivity : AnkiActivity() {
             }
 
             val deckNames = decks.map { it.name }.toTypedArray()
-            val deckIds = decks.map { it.id }
 
             MaterialAlertDialogBuilder(this@MuseumActivity)
                 .setTitle("Select Deck")
@@ -196,29 +231,10 @@ class MuseumActivity : AnkiActivity() {
         }
     }
 
-    /**
-     * Shows the full painting for 3 seconds with a countdown toast.
-     */
-    private fun showPeekPreview() {
-        // Enable peek mode
-        binding.paintingView.enablePeekMode()
-
-        // Show countdown toast
-        showThemedToast(this, "Peeking for 3 seconds...", false)
-
-        // Disable peek mode after 3 seconds
-        binding.paintingView.postDelayed({
-            binding.paintingView.disablePeekMode()
-        }, 3000)
-    }
-
-    /**
-     * Shows a celebration dialog when the puzzle is completed.
-     */
     private fun showCompletionDialog() {
         MaterialAlertDialogBuilder(this)
             .setTitle("Masterpiece Complete!")
-            .setMessage("You've revealed the entire Basque countryside! Your dedication to learning is inspiring.")
+            .setMessage("You've revealed the entire painting! Your dedication to learning is inspiring.")
             .setPositiveButton("Continue Learning") { dialog, _ ->
                 dialog.dismiss()
             }.setNeutralButton("View Gallery") { dialog, _ ->
@@ -228,12 +244,6 @@ class MuseumActivity : AnkiActivity() {
             .show()
     }
 
-    /**
-     * Generates 120 days of plausible mock study data.
-     * Uses a fixed seed so the heatmap looks consistent across runs.
-     *
-     * TODO: Replace with actual study data from collection
-     */
     private fun generateMockActivityData(): Map<String, Int> {
         val data = mutableMapOf<String, Int>()
         val random = Random(42)
@@ -244,7 +254,6 @@ class MuseumActivity : AnkiActivity() {
                 Calendar.getInstance().apply {
                     add(Calendar.DAY_OF_MONTH, -i)
                 }
-            // Recent streak days always have data
             if (i < streakDays || random.nextFloat() < 0.6f) {
                 val cards =
                     if (i < streakDays) {
