@@ -6,7 +6,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.Path
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
@@ -70,9 +71,6 @@ class PaintingPuzzleView(
     private val animatingPieces = mutableMapOf<Int, Int>()
     private var currentAnimator: ValueAnimator? = null
 
-    // Shared path generator for consistent jigsaw shapes across views
-    private val pathGenerator = PuzzlePiecePathGenerator()
-
     // Custom PNG bitmaps for locked piece types
     private val pieceBitmaps by lazy {
         mapOf(
@@ -98,6 +96,18 @@ class PaintingPuzzleView(
 
     // Paint for drawing piece bitmaps with filtering
     private val pieceBitmapPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+
+    // Paint for alpha masking (PorterDuff DST_IN compositing)
+    private val alphaMaskPaint =
+        Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG).apply {
+            xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
+        }
+
+    // Paint for peek mode piece outlines
+    private val peekPiecePaint =
+        Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG).apply {
+            alpha = 40
+        }
 
     // Peek mode state
     private var isPeekMode = false
@@ -168,7 +178,6 @@ class PaintingPuzzleView(
     fun setPainting(bitmap: Bitmap) {
         painting = bitmap
         scaledBitmap = null
-        pathGenerator.invalidateCache()
         requestLayout()
         invalidate()
     }
@@ -238,9 +247,6 @@ class PaintingPuzzleView(
                     true,
                 )
         }
-
-        // Clear path cache when size changes
-        pathGenerator.invalidateCache()
     }
 
     /**
@@ -358,7 +364,7 @@ class PaintingPuzzleView(
     }
 
     /**
-     * Draws the full painting in peek mode with overlay and outlines.
+     * Draws the full painting in peek mode with overlay and faint piece outlines.
      */
     private fun drawPeekMode(canvas: Canvas) {
         scaledBitmap?.let { bitmap ->
@@ -368,16 +374,28 @@ class PaintingPuzzleView(
             // Draw semi-transparent overlay
             canvas.drawRect(puzzleRect, peekOverlayPaint)
 
-            // Draw puzzle piece outlines
+            // Draw faint puzzle piece PNG outlines
             for (row in 0 until ROWS) {
                 for (col in 0 until COLS) {
-                    val index = row * COLS + col
                     val left = puzzleRect.left + (col * pieceWidth)
                     val top = puzzleRect.top + (row * pieceHeight)
-                    val piecePath = pathGenerator.getPiecePath(row, col, left, top, pieceWidth, pieceHeight)
 
-                    // Draw piece outline
-                    canvas.drawPath(piecePath, peekOutlinePaint)
+                    // Draw piece PNG at low alpha to show jigsaw outlines
+                    val pieceType = getPieceType(row, col)
+                    val bmp = pieceBitmaps[pieceType] ?: continue
+
+                    val bmpWidth = bmp.width.toFloat()
+                    val bmpHeight = bmp.height.toFloat()
+                    val scaleX = pieceWidth / PNG_BODY_SIZE
+                    val scaleY = pieceHeight / PNG_BODY_SIZE
+                    val (bodyX, bodyY) = PIECE_BODY_OFFSETS[pieceType] ?: Pair(0f, 0f)
+                    val destLeft = left - bodyX * scaleX
+                    val destTop = top - bodyY * scaleY
+                    val destRight = destLeft + bmpWidth * scaleX
+                    val destBottom = destTop + bmpHeight * scaleY
+
+                    tmpPieceRect.set(destLeft, destTop, destRight, destBottom)
+                    canvas.drawBitmap(bmp, null, tmpPieceRect, peekPiecePaint)
                 }
             }
         }
@@ -385,7 +403,7 @@ class PaintingPuzzleView(
 
     /**
      * Draws a single puzzle piece. Locked pieces use custom PNG images;
-     * unlocked pieces clip to the computed jigsaw path and reveal the painting.
+     * unlocked pieces use PNG alpha masks to clip the painting to the same jigsaw shape.
      */
     private fun drawPuzzlePiece(
         canvas: Canvas,
@@ -397,27 +415,41 @@ class PaintingPuzzleView(
         val top = puzzleRect.top + (row * pieceHeight)
 
         if (index in unlockedPieces) {
-            // Unlocked: clip to jigsaw path and draw painting
-            val piecePath = pathGenerator.getPiecePath(row, col, left, top, pieceWidth, pieceHeight)
-            canvas.save()
-            canvas.clipPath(piecePath)
+            // Unlocked: use PNG alpha mask to clip painting to jigsaw shape
+            val pieceType = getPieceType(row, col)
+            val maskBmp = pieceBitmaps[pieceType] ?: return
 
+            // Compute the same destination rect as drawLockedPiecePng
+            val bmpWidth = maskBmp.width.toFloat()
+            val bmpHeight = maskBmp.height.toFloat()
+            val scaleX = pieceWidth / PNG_BODY_SIZE
+            val scaleY = pieceHeight / PNG_BODY_SIZE
+            val (bodyX, bodyY) = PIECE_BODY_OFFSETS[pieceType] ?: Pair(0f, 0f)
+            val destLeft = left - bodyX * scaleX
+            val destTop = top - bodyY * scaleY
+            val destRight = destLeft + bmpWidth * scaleX
+            val destBottom = destTop + bmpHeight * scaleY
+
+            // Use saveLayer to create an offscreen buffer for compositing
+            val layerRect = RectF(destLeft, destTop, destRight, destBottom)
+            canvas.saveLayer(layerRect, null)
+
+            // Draw painting (DST) — only the area under the piece
             val paint =
                 if (index in animatingPieces) {
-                    Paint().apply {
-                        alpha = animatingPieces[index] ?: 255
-                    }
+                    Paint().apply { alpha = animatingPieces[index] ?: 255 }
                 } else {
                     null
                 }
-
             scaledBitmap?.let {
                 canvas.drawBitmap(it, puzzleRect.left, puzzleRect.top, paint)
             }
-            canvas.restore()
 
-            // Draw border for unlocked pieces
-            canvas.drawPath(piecePath, pieceBorderPaint)
+            // Apply PNG alpha mask (SRC) — DST_IN keeps only painting pixels where mask is opaque
+            tmpPieceRect.set(destLeft, destTop, destRight, destBottom)
+            canvas.drawBitmap(maskBmp, null, tmpPieceRect, alphaMaskPaint)
+
+            canvas.restore()
         } else {
             // Locked: draw the custom PNG piece image
             drawLockedPiecePng(canvas, row, col, left, top)
