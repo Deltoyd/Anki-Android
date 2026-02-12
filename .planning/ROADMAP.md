@@ -40,10 +40,10 @@ Plans:
   2. No visible shape mismatch between locked gray puzzle and unlocked painting sections
   3. Tab and hole boundaries align perfectly at piece intersections (within 1px tolerance)
   4. Shape system works correctly for all 14 piece variants (4 corners, 8 borders, 2 interiors)
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 02-01: TBD
+- [ ] 02-01-PLAN.md -- Replace path-based clipping with PNG alpha mask clipping for unlocked pieces
 
 #### Phase 3: Transparent Locked Pieces
 **Goal**: Locked pieces show the painting underneath at 80% opacity
@@ -66,8 +66,8 @@ Phases execute in numeric order: 2 → 3
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1. Puzzle Asset & Rendering Foundation | v1.0 | 2/2 | Complete | 2026-02-12 |
-| 2. Shape System Fix | v1.1 | 0/? | Not started | - |
+| 2. Shape System Fix | v1.1 | 0/1 | Planned | - |
 | 3. Transparent Locked Pieces | v1.1 | 0/? | Not started | - |
 
 ---
-*Last updated: 2026-02-12 — v1.1 roadmap redefined*
+*Last updated: 2026-02-12 — Phase 2 planned*
