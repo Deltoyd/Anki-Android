@@ -29,8 +29,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: Replace puzzle piece assets (copy 14 new PNGs, remove 9 old PNGs)
-- [ ] 01-02: Update placement and rendering logic (getPieceType, pieceBitmaps map)
+- [ ] 01-01-PLAN.md -- Copy 14 new gray gradient PNGs to drawable-nodpi/ and remove 5 old no-variant PNGs
+- [ ] 01-02-PLAN.md -- Update pieceBitmaps map (14 entries) and getPieceType() with (row+col) % 2 variant alternation
 
 ## Progress
 
