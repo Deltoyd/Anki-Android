@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-12)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-02-12 — Milestone v1.1 redefined
+Phase: 02-shape-system-fix (Plan 1 of 2 complete)
+Plan: 02-01 (complete)
+Status: Phase 2 in progress
+Last activity: 2026-02-13 — Completed 02-01-PLAN.md (shape fix)
 
-Progress: [██░░░░░░░░] 20% (v1.0 complete, v1.1 ahead)
+Progress: [███░░░░░░░] 30% (v1.0 complete, Phase 2 Plan 1 complete)
 
 ## Performance Metrics
 
@@ -27,6 +27,7 @@ Progress: [██░░░░░░░░] 20% (v1.0 complete, v1.1 ahead)
 | Phase | Plans | Status |
 |-------|-------|--------|
 | 1. Puzzle Asset & Rendering Foundation | 2/2 | Complete (v1.0) |
+| 2. Shape System Fix | 1/2 | In progress (02-01 complete) |
 
 ## Accumulated Context
 
@@ -37,6 +38,8 @@ Progress: [██░░░░░░░░] 20% (v1.0 complete, v1.1 ahead)
 - Per-piece body offset rendering for seamless jigsaw alignment
 - 80% opacity for locked piece transparency (user tested 50%, preferred more opaque)
 - Unlocked pieces must match locked PNG shapes (old PuzzlePiecePathGenerator shapes are wrong)
+- Use PorterDuff.Mode.DST_IN with saveLayer for PNG alpha mask compositing (Phase 2)
+- Delete PuzzlePiecePathGenerator entirely to eliminate dual-shape system (Phase 2)
 
 ### Pending Todos
 
@@ -44,14 +47,13 @@ None.
 
 ### Blockers/Concerns
 
-- Unlocked piece clip paths don't match locked PNG shapes (core v1.1 fix)
-- Need to derive clip paths from PNG alpha channels or replace path generator
+None - shape system fix complete and verified on device.
 
 ## Session Continuity
 
-Last session: 2026-02-12
-Stopped at: v1.1 milestone redefined, defining requirements
-Resume file: None
+Last session: 2026-02-13
+Stopped at: Completed 02-01-PLAN.md (Shape System Fix)
+Resume file: .planning/phases/02-shape-system-fix/02-01-SUMMARY.md
 
 ---
-*Next: Define requirements and roadmap*
+*Next: Execute Phase 2 Plan 2 (transparency adjustments) or continue with remaining v1.1 work*
