@@ -63,25 +63,26 @@ Requirements for daily puzzle reveal mechanics. Each maps to roadmap phases.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| TRANS-01 | — | Pending |
-| TRANS-02 | — | Pending |
-| UNLK-01 | — | Pending |
-| UNLK-02 | — | Pending |
-| UNLK-03 | — | Pending |
-| UNLK-04 | — | Pending |
-| RSET-01 | — | Pending |
-| RSET-02 | — | Pending |
-| COLL-01 | — | Pending |
-| COLL-02 | — | Pending |
-| COLL-03 | — | Pending |
-| CELB-01 | — | Pending |
-| CELB-02 | — | Pending |
+| TRANS-01 | Phase 2 | Pending |
+| TRANS-02 | Phase 2 | Pending |
+| UNLK-01 | Phase 3 | Pending |
+| UNLK-02 | Phase 3 | Pending |
+| UNLK-03 | Phase 3 | Pending |
+| UNLK-04 | Phase 3 | Pending |
+| RSET-01 | Phase 4 | Pending |
+| RSET-02 | Phase 4 | Pending |
+| CELB-01 | Phase 5 | Pending |
+| CELB-02 | Phase 5 | Pending |
+| COLL-01 | Phase 5 | Pending |
+| COLL-02 | Phase 5 | Pending |
+| COLL-03 | Phase 5 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 13 total
-- Mapped to phases: 0
-- Unmapped: 13
+- Mapped to phases: 13
+- Unmapped: 0
+- Coverage: 100%
 
 ---
 *Requirements defined: 2026-02-12*
-*Last updated: 2026-02-12 after initial definition*
+*Last updated: 2026-02-12 after v1.1 roadmap creation*
