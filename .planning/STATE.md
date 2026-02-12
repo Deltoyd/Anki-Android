@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-02-12)
 
 **Core value:** When all pieces are locked, the puzzle must look like a single cohesive, fully-assembled jigsaw in gray — orderly and waiting to be unlocked.
-**Current focus:** Phase 1 - Puzzle Assembly Fix
+**Current focus:** v1.0 complete — planning next milestone
 
 ## Current Position
 
 Phase: 1 of 1 (Puzzle Assembly Fix)
 Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-02-12 — Completed 01-02-PLAN.md
+Status: Milestone v1.0 complete
+Last activity: 2026-02-12 — Milestone v1.0 shipped
 
 Progress: [██████████] 100%
 

@@ -22,12 +22,16 @@ When all pieces are locked, the puzzle must look like a single cohesive, fully-a
 
 ### Active
 
-- [ ] Replace 9 old PNG assets with 14 new gray gradient puzzle pieces
-- [ ] Fix piece placement logic so tabs always interlock with adjacent holes
-- [ ] Corners placed at exactly the 4 grid corners
-- [ ] Border variants alternate along edges so adjacent pieces interlock
-- [ ] Interior variants alternate in checkerboard pattern so all neighbors interlock
-- [ ] Visual result: one unified gray puzzle, not a disordered grid
+(None — milestone complete)
+
+### Validated (v1.0)
+
+- ✓ Replace 9 old PNG assets with 14 new gray gradient puzzle pieces — v1.0
+- ✓ Fix piece placement logic so tabs always interlock with adjacent holes — v1.0
+- ✓ Corners placed at exactly the 4 grid corners — v1.0
+- ✓ Border variants alternate along edges so adjacent pieces interlock — v1.0
+- ✓ Interior variants alternate in checkerboard pattern so all neighbors interlock — v1.0
+- ✓ Visual result: one unified gray puzzle, not a disordered grid — v1.0 (user verified)
 
 ### Out of Scope
 
@@ -38,17 +42,9 @@ When all pieces are locked, the puzzle must look like a single cohesive, fully-a
 
 ## Context
 
-**Current state:** `PaintingPuzzleView.kt` uses `getPieceType()` which maps grid positions to 9 piece types (4 corners, 4 borders, 1 middle). No alternation between variants, so the same border/middle PNG is used everywhere regardless of tab orientation. This means tabs face tabs and holes face holes in many positions.
+**Current state (post v1.0):** `PaintingPuzzleView.kt` uses 14 gray gradient PNG assets with a checkerboard variant system. `getPieceType()` maps grid positions using `(row+col) % 2` alternation (with inverted formula for left/right borders). `drawLockedPiecePng()` uses per-piece body offset calculations (`PIECE_BODY_OFFSETS` map) to position each jigsaw piece so tabs extend into neighboring cells and holes receive neighbors' tabs. The locked puzzle displays as one cohesive, fully-assembled gray jigsaw.
 
-**New assets:** 14 PNG pieces in `/Users/rolandharper/Projects/Ikasi/Puzzle-shapes/New-gray-radient-puzzle/`:
-- 4 corners: top-left, top-right, bottom-left, bottom-right
-- 2 top border variants: top-middle-1, top-middle-2
-- 2 bottom border variants: bottom-middle-1, bottom-middle-2
-- 2 left border variants: left-middle-1, left-middle-2
-- 2 right border variants: right-middle-1, right-middle-2
-- 2 interior variants: only-middle, only-middle-2
-
-Variants alternate using `(row+col) % 2` so that every piece's tabs meet its neighbor's holes.
+**Shipped v1.0** on 2026-02-12: 1 phase, 2 plans, 23 files changed, +1,383/-242 lines.
 
 **Key files:**
 - `AnkiDroid/src/main/java/com/ichi2/anki/ui/museum/PaintingPuzzleView.kt` — piece rendering and placement
@@ -64,9 +60,11 @@ Variants alternate using `(row+col) % 2` so that every piece's tabs meet its nei
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Use 14 PNGs with 2 variants per category | Allows proper tab/hole interlocking between neighbors | — Pending |
-| Checkerboard alternation via (row+col) % 2 | Standard jigsaw pattern ensures adjacent pieces always complement | — Pending |
-| Keep PuzzlePiecePathGenerator unchanged | Unlocked pieces work fine; only locked display needs fixing | — Pending |
+| Use 14 PNGs with 2 variants per category | Allows proper tab/hole interlocking between neighbors | ✓ Good |
+| Checkerboard alternation via (row+col) % 2 | Standard jigsaw pattern ensures adjacent pieces always complement | ✓ Good |
+| Keep PuzzlePiecePathGenerator unchanged | Unlocked pieces work fine; only locked display needs fixing | ✓ Good |
+| Inverted variant formula for left/right borders | Left/right PNG variants have swapped tab orientations vs top/bottom | ✓ Good |
+| Per-piece body offset rendering | Each PNG has different body-to-tab ratios; uniform scaling caused gaps | ✓ Good |
 
 ---
-*Last updated: 2026-02-12 after initialization*
+*Last updated: 2026-02-12 after v1.0 milestone*
