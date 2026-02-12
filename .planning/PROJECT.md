@@ -1,12 +1,22 @@
-# Museum Puzzle Piece Display Fix
+# Museum Puzzle & Daily Reveal
 
 ## What This Is
 
-A UI fix for the AnkiDroid Museum homescreen's locked puzzle display. The 10x10 jigsaw puzzle grid currently shows pieces in wrong positions — tabs don't meet holes, creating a disordered appearance. This replaces the existing 9 PNG assets with 14 new gray gradient puzzle pieces and fixes the placement logic so locked pieces display as a clean, fully-assembled gray puzzle.
+The AnkiDroid Museum homescreen features a 10x10 jigsaw puzzle overlay on masterpiece paintings. Locked pieces are semi-transparent gray, teasing the painting underneath. As users review flashcards throughout the day, puzzle pieces randomly unlock to reveal the painting — one card reviewed, one piece revealed. The puzzle resets daily, creating a daily motivation loop tied to study habits.
 
 ## Core Value
 
-When all pieces are locked, the puzzle must look like a single cohesive, fully-assembled jigsaw in gray — orderly and waiting to be unlocked by the user through study.
+Studying flashcards progressively reveals a masterpiece — the puzzle is a daily visual reward that connects effort to beauty.
+
+## Current Milestone: v1.1 Daily Puzzle Reveal
+
+**Goal:** Make locked puzzle pieces semi-transparent so the painting shows through, and tie piece unlocking to daily card reviews.
+
+**Target features:**
+- Semi-transparent locked pieces (50% opacity) showing painting underneath
+- 1 card review = 1 random puzzle piece unlocked
+- Daily reset — fresh puzzle each morning
+- Celebration cinematic when all 100 pieces revealed
 
 ## Requirements
 
@@ -22,7 +32,12 @@ When all pieces are locked, the puzzle must look like a single cohesive, fully-a
 
 ### Active
 
-(None — milestone complete)
+- [ ] Locked pieces rendered at 50% opacity so painting is visible underneath
+- [ ] Museum reads today's card review count to determine unlocked pieces
+- [ ] 1 card reviewed = 1 random puzzle piece unlocked
+- [ ] Unlock state persists during the day (survives app restart)
+- [ ] Puzzle resets daily (new day = all pieces locked again)
+- [ ] Puzzle break cinematic plays when all 100 pieces revealed in a day
 
 ### Validated (v1.0)
 
@@ -38,7 +53,7 @@ When all pieces are locked, the puzzle must look like a single cohesive, fully-a
 - Changing unlocked piece shapes (PuzzlePiecePathGenerator stays as-is) — user confirmed locked-only
 - Changing the puzzle grid dimensions (stays 10x10) — not requested
 - Changing the Museum layout, gallery, or animation systems — not requested
-- Changing the unlock/reward mechanics — not requested
+- Changing the unlock/reward mechanics — not requested (v1.0 scope; now active in v1.1)
 
 ## Context
 
@@ -67,4 +82,4 @@ When all pieces are locked, the puzzle must look like a single cohesive, fully-a
 | Per-piece body offset rendering | Each PNG has different body-to-tab ratios; uniform scaling caused gaps | ✓ Good |
 
 ---
-*Last updated: 2026-02-12 after v1.0 milestone*
+*Last updated: 2026-02-12 after v1.1 milestone start*

@@ -4,37 +4,15 @@
 
 See: .planning/PROJECT.md (updated 2026-02-12)
 
-**Core value:** When all pieces are locked, the puzzle must look like a single cohesive, fully-assembled jigsaw in gray — orderly and waiting to be unlocked.
-**Current focus:** v1.0 complete — planning next milestone
+**Core value:** Studying flashcards progressively reveals a masterpiece — the puzzle is a daily visual reward that connects effort to beauty.
+**Current focus:** v1.1 Daily Puzzle Reveal
 
 ## Current Position
 
-Phase: 1 of 1 (Puzzle Assembly Fix)
-Plan: 2 of 2 in current phase
-Status: Milestone v1.0 complete
-Last activity: 2026-02-12 — Milestone v1.0 shipped
-
-Progress: [██████████] 100%
-
-## Performance Metrics
-
-**Velocity:**
-- Total plans completed: 2
-- Average duration: 13 min
-- Total execution time: 0.43 hours
-
-**By Phase:**
-
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 01-puzzle-assembly-fix | 2 | 26 min | 13 min |
-
-**Recent Plans:**
-
-| Phase-Plan | Duration | Tasks | Files |
-|------------|----------|-------|-------|
-| 01-01 | 1 min | 2 | 14 |
-| 01-02 | 25 min | 2 | 1 |
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-02-12 — Milestone v1.1 started
 
 ## Accumulated Context
 
