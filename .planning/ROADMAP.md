@@ -12,7 +12,7 @@ Single-phase focused fix to replace 9 old puzzle piece PNG assets with 14 new gr
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Puzzle Assembly Fix** - Replace assets and fix placement logic for proper interlocking
+- [x] **Phase 1: Puzzle Assembly Fix** - Replace assets and fix placement logic for proper interlocking (completed 2026-02-12)
 
 ## Phase Details
 
@@ -29,8 +29,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md -- Copy 14 new gray gradient PNGs to drawable-nodpi/ and remove 5 old no-variant PNGs
-- [ ] 01-02-PLAN.md -- Update pieceBitmaps map (14 entries) and getPieceType() with (row+col) % 2 variant alternation
+- [x] 01-01-PLAN.md -- Copy 14 new gray gradient PNGs to drawable-nodpi/ and remove 5 old no-variant PNGs
+- [x] 01-02-PLAN.md -- Update pieceBitmaps map (14 entries) and getPieceType() with (row+col) % 2 variant alternation
 
 ## Progress
 
@@ -39,4 +39,4 @@ Phases execute in numeric order.
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Puzzle Assembly Fix | 0/2 | Not started | - |
+| 1. Puzzle Assembly Fix | 2/2 | Complete | 2026-02-12 |
