@@ -3,17 +3,15 @@ package com.ichi2.anki.ui.museum
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BlurMaskFilter
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
-import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
-import android.graphics.Shader
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.DecelerateInterpolator
-import kotlin.random.Random
+import com.ichi2.anki.R
 
 /**
  * Custom View that displays a painting as a jigsaw puzzle with interlocking pieces.
@@ -30,18 +28,8 @@ class PaintingPuzzleView(
         const val ROWS = 10
         const val TOTAL_PIECES = COLS * ROWS // 100
 
-        // Puzzle piece tab configuration
-        private const val TAB_SIZE = 0.2f // Tab size relative to piece size
-
-        // Gradient colors for locked pieces
-        private val GRAY_GRADIENT_COLORS =
-            intArrayOf(
-                0xFFD4CFC8.toInt(), // Lightest gray
-                0xFFC4B8A8.toInt(), // Medium-light
-                0xFFB5A89A.toInt(), // Medium
-                0xFFA6998B.toInt(), // Medium-dark
-                0xFF978A7C.toInt(), // Darkest gray
-            )
+        // How far tabs extend beyond the cell, as a fraction of piece size
+        private const val TAB_OVERFLOW = 0.25f
     }
 
     private var painting: Bitmap? = null
@@ -52,18 +40,37 @@ class PaintingPuzzleView(
     private val animatingPieces = mutableMapOf<Int, Int>()
     private var currentAnimator: ValueAnimator? = null
 
-    // Cache for puzzle piece paths
-    private val piecePathCache = mutableMapOf<Int, Path>()
-    private val tabPattern = IntArray(TOTAL_PIECES) // 0=none, 1=tab out, -1=blank in
+    // Shared path generator for consistent jigsaw shapes across views
+    private val pathGenerator = PuzzlePiecePathGenerator()
+
+    // Custom PNG bitmaps for locked piece types
+    private val pieceBitmaps by lazy {
+        mapOf(
+            "corner_tl" to BitmapFactory.decodeResource(resources, R.drawable.puzzle_corner_tl),
+            "corner_tr" to BitmapFactory.decodeResource(resources, R.drawable.puzzle_corner_tr),
+            "corner_bl" to BitmapFactory.decodeResource(resources, R.drawable.puzzle_corner_bl),
+            "corner_br" to BitmapFactory.decodeResource(resources, R.drawable.puzzle_corner_br),
+            "border_top_1" to BitmapFactory.decodeResource(resources, R.drawable.puzzle_border_top_1),
+            "border_top_2" to BitmapFactory.decodeResource(resources, R.drawable.puzzle_border_top_2),
+            "border_bottom_1" to BitmapFactory.decodeResource(resources, R.drawable.puzzle_border_bottom_1),
+            "border_bottom_2" to BitmapFactory.decodeResource(resources, R.drawable.puzzle_border_bottom_2),
+            "border_left_1" to BitmapFactory.decodeResource(resources, R.drawable.puzzle_border_left_1),
+            "border_left_2" to BitmapFactory.decodeResource(resources, R.drawable.puzzle_border_left_2),
+            "border_right_1" to BitmapFactory.decodeResource(resources, R.drawable.puzzle_border_right_1),
+            "border_right_2" to BitmapFactory.decodeResource(resources, R.drawable.puzzle_border_right_2),
+            "middle_1" to BitmapFactory.decodeResource(resources, R.drawable.puzzle_middle_1),
+            "middle_2" to BitmapFactory.decodeResource(resources, R.drawable.puzzle_middle_2),
+        )
+    }
+
+    // Reusable rect for drawing piece PNGs
+    private val tmpPieceRect = RectF()
+
+    // Paint for drawing piece bitmaps with filtering
+    private val pieceBitmapPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
 
     // Peek mode state
     private var isPeekMode = false
-
-    private val lockedPaint =
-        Paint().apply {
-            style = Paint.Style.FILL
-            isAntiAlias = true
-        }
 
     private val pieceBorderPaint =
         Paint().apply {
@@ -125,27 +132,13 @@ class PaintingPuzzleView(
     private var puzzleRect = RectF()
 
     init {
-        // Initialize tab pattern for consistent puzzle piece connections
-        initializeTabPattern()
         setLayerType(LAYER_TYPE_SOFTWARE, null) // Required for blur effects
-    }
-
-    /**
-     * Initialize the tab pattern so pieces interlock correctly.
-     * Each piece's right and bottom edges determine the pattern.
-     */
-    private fun initializeTabPattern() {
-        val random = Random(42) // Fixed seed for consistent pattern
-        for (i in 0 until TOTAL_PIECES) {
-            // Randomly assign tab or blank (50/50)
-            tabPattern[i] = if (random.nextBoolean()) 1 else -1
-        }
     }
 
     fun setPainting(bitmap: Bitmap) {
         painting = bitmap
         scaledBitmap = null
-        piecePathCache.clear()
+        pathGenerator.invalidateCache()
         requestLayout()
         invalidate()
     }
@@ -217,7 +210,7 @@ class PaintingPuzzleView(
         }
 
         // Clear path cache when size changes
-        piecePathCache.clear()
+        pathGenerator.invalidateCache()
     }
 
     /**
@@ -351,7 +344,7 @@ class PaintingPuzzleView(
                     val index = row * COLS + col
                     val left = puzzleRect.left + (col * pieceWidth)
                     val top = puzzleRect.top + (row * pieceHeight)
-                    val piecePath = getPiecePathForGrid(row, col, index, left, top)
+                    val piecePath = pathGenerator.getPiecePath(row, col, left, top, pieceWidth, pieceHeight)
 
                     // Draw piece outline
                     canvas.drawPath(piecePath, peekOutlinePaint)
@@ -361,7 +354,8 @@ class PaintingPuzzleView(
     }
 
     /**
-     * Draws a single jigsaw puzzle piece with interlocking tabs.
+     * Draws a single puzzle piece. Locked pieces use custom PNG images;
+     * unlocked pieces clip to the computed jigsaw path and reveal the painting.
      */
     private fun drawPuzzlePiece(
         canvas: Canvas,
@@ -372,15 +366,12 @@ class PaintingPuzzleView(
         val left = puzzleRect.left + (col * pieceWidth)
         val top = puzzleRect.top + (row * pieceHeight)
 
-        // Get or create the puzzle piece path
-        val piecePath = getPiecePathForGrid(row, col, index, left, top)
-
         if (index in unlockedPieces) {
-            // Draw unlocked piece (reveal painting)
+            // Unlocked: clip to jigsaw path and draw painting
+            val piecePath = pathGenerator.getPiecePath(row, col, left, top, pieceWidth, pieceHeight)
             canvas.save()
             canvas.clipPath(piecePath)
 
-            // Apply animation alpha if piece is animating
             val paint =
                 if (index in animatingPieces) {
                     Paint().apply {
@@ -394,199 +385,73 @@ class PaintingPuzzleView(
                 canvas.drawBitmap(it, puzzleRect.left, puzzleRect.top, paint)
             }
             canvas.restore()
+
+            // Draw border for unlocked pieces
+            canvas.drawPath(piecePath, pieceBorderPaint)
         } else {
-            // Draw locked piece with gradient
-            drawLockedPieceWithGradient(canvas, piecePath, row, col)
+            // Locked: draw the custom PNG piece image
+            drawLockedPiecePng(canvas, row, col, left, top)
         }
-
-        // Draw piece border for puzzle piece outline
-        canvas.drawPath(piecePath, pieceBorderPaint)
     }
 
     /**
-     * Draws a locked piece with flat medium gray.
+     * Draws a locked piece using the appropriate custom PNG image.
+     * The dest rect accounts for tab protrusions extending beyond the cell.
      */
-    private fun drawLockedPieceWithGradient(
+    private fun drawLockedPiecePng(
         canvas: Canvas,
-        piecePath: Path,
         row: Int,
         col: Int,
-    ) {
-        // Use flat medium gray for locked pieces (MuseoLingo design)
-        lockedPaint.color = 0xFF9E9E9E.toInt() // museolingo_puzzle_gray
-
-        canvas.drawPath(piecePath, lockedPaint)
-    }
-
-    /**
-     * Interpolates between two colors.
-     */
-    private fun interpolateColor(
-        color1: Int,
-        color2: Int,
-        fraction: Float,
-    ): Int {
-        val f = fraction.coerceIn(0f, 1f)
-        val invF = 1f - f
-
-        val a1 = (color1 shr 24 and 0xFF)
-        val r1 = (color1 shr 16 and 0xFF)
-        val g1 = (color1 shr 8 and 0xFF)
-        val b1 = (color1 and 0xFF)
-
-        val a2 = (color2 shr 24 and 0xFF)
-        val r2 = (color2 shr 16 and 0xFF)
-        val g2 = (color2 shr 8 and 0xFF)
-        val b2 = (color2 and 0xFF)
-
-        val a = (a1 * invF + a2 * f).toInt()
-        val r = (r1 * invF + r2 * f).toInt()
-        val g = (g1 * invF + g2 * f).toInt()
-        val b = (b1 * invF + b2 * f).toInt()
-
-        return (a shl 24) or (r shl 16) or (g shl 8) or b
-    }
-
-    /**
-     * Creates a jigsaw puzzle piece path with tabs and blanks.
-     * Caches paths for performance.
-     */
-    private fun getPiecePathForGrid(
-        row: Int,
-        col: Int,
-        index: Int,
         left: Float,
         top: Float,
-    ): Path {
-        // Check cache first
-        piecePathCache[index]?.let { return it }
+    ) {
+        val pieceType = getPieceType(row, col)
+        val bmp = pieceBitmaps[pieceType] ?: return
 
-        val path = Path()
-        val right = left + pieceWidth
-        val bottom = top + pieceHeight
+        val tabW = pieceWidth * TAB_OVERFLOW
+        val tabH = pieceHeight * TAB_OVERFLOW
 
-        // Tab size
-        val tabWidth = pieceWidth * TAB_SIZE
-        val tabHeight = pieceHeight * TAB_SIZE
+        tmpPieceRect.set(
+            left - if (col > 0) tabW else 0f,
+            top - if (row > 0) tabH else 0f,
+            left + pieceWidth + if (col < COLS - 1) tabW else 0f,
+            top + pieceHeight + if (row < ROWS - 1) tabH else 0f,
+        )
 
-        // Start at top-left corner
-        path.moveTo(left, top)
-
-        // Top edge (check if piece above has a tab pointing down)
-        if (row > 0) {
-            val aboveIndex = (row - 1) * COLS + col
-            val hasTab = tabPattern[aboveIndex] == 1
-            drawEdge(path, left, top, right, top, tabWidth, hasTab, isHorizontal = true)
-        } else {
-            path.lineTo(right, top)
-        }
-
-        // Right edge (check if this piece has a tab pointing right)
-        if (col < COLS - 1) {
-            val hasTab = tabPattern[index] == 1
-            drawEdge(path, right, top, right, bottom, tabHeight, hasTab, isHorizontal = false)
-        } else {
-            path.lineTo(right, bottom)
-        }
-
-        // Bottom edge (check if this piece has a tab pointing down - inverse for piece below)
-        if (row < ROWS - 1) {
-            val hasTab = tabPattern[index] == -1 // Inverse: if we have blank, neighbor has tab
-            drawEdge(path, right, bottom, left, bottom, tabWidth, hasTab, isHorizontal = true, reverse = true)
-        } else {
-            path.lineTo(left, bottom)
-        }
-
-        // Left edge (check if piece to left has a tab pointing right)
-        if (col > 0) {
-            val leftIndex = row * COLS + (col - 1)
-            val hasTab = tabPattern[leftIndex] == 1
-            drawEdge(path, left, bottom, left, top, tabHeight, hasTab, isHorizontal = false, reverse = true)
-        } else {
-            path.lineTo(left, top)
-        }
-
-        path.close()
-        piecePathCache[index] = path
-        return path
+        canvas.drawBitmap(bmp, null, tmpPieceRect, pieceBitmapPaint)
     }
 
     /**
-     * Draws an edge with or without a tab/blank.
+     * Returns the piece type key for the given grid position.
      */
-    private fun drawEdge(
-        path: Path,
-        startX: Float,
-        startY: Float,
-        endX: Float,
-        endY: Float,
-        tabSize: Float,
-        hasTab: Boolean,
-        isHorizontal: Boolean,
-        reverse: Boolean = false,
-    ) {
-        if (!hasTab) {
-            // No tab, just straight line
-            path.lineTo(endX, endY)
-            return
+    private fun getPieceType(
+        row: Int,
+        col: Int,
+    ): String =
+        when {
+            row == 0 && col == 0 -> "corner_tl"
+            row == 0 && col == COLS - 1 -> "corner_tr"
+            row == ROWS - 1 && col == 0 -> "corner_bl"
+            row == ROWS - 1 && col == COLS - 1 -> "corner_br"
+            row == 0 -> {
+                val variant = if ((row + col) % 2 == 0) 1 else 2
+                "border_top_$variant"
+            }
+            row == ROWS - 1 -> {
+                val variant = if ((row + col) % 2 == 0) 1 else 2
+                "border_bottom_$variant"
+            }
+            col == 0 -> {
+                val variant = if ((row + col) % 2 == 0) 1 else 2
+                "border_left_$variant"
+            }
+            col == COLS - 1 -> {
+                val variant = if ((row + col) % 2 == 0) 1 else 2
+                "border_right_$variant"
+            }
+            else -> {
+                val variant = if ((row + col) % 2 == 0) 1 else 2
+                "middle_$variant"
+            }
         }
-
-        val direction = if (reverse) -1 else 1
-
-        if (isHorizontal) {
-            // Horizontal edge with tab
-            val midX = (startX + endX) / 2
-            val tabY = startY + (tabSize * direction)
-
-            // Draw to start of tab
-            path.lineTo(midX - tabSize, startY)
-            // Curve into tab
-            path.cubicTo(
-                midX - tabSize * 0.5f,
-                startY,
-                midX - tabSize * 0.5f,
-                tabY,
-                midX,
-                tabY,
-            )
-            // Curve out of tab
-            path.cubicTo(
-                midX + tabSize * 0.5f,
-                tabY,
-                midX + tabSize * 0.5f,
-                startY,
-                midX + tabSize,
-                startY,
-            )
-            // Continue to end
-            path.lineTo(endX, endY)
-        } else {
-            // Vertical edge with tab
-            val midY = (startY + endY) / 2
-            val tabX = startX + (tabSize * direction)
-
-            // Draw to start of tab
-            path.lineTo(startX, midY - tabSize)
-            // Curve into tab
-            path.cubicTo(
-                startX,
-                midY - tabSize * 0.5f,
-                tabX,
-                midY - tabSize * 0.5f,
-                tabX,
-                midY,
-            )
-            // Curve out of tab
-            path.cubicTo(
-                tabX,
-                midY + tabSize * 0.5f,
-                startX,
-                midY + tabSize * 0.5f,
-                startX,
-                midY + tabSize,
-            )
-            // Continue to end
-            path.lineTo(endX, endY)
-        }
-    }
 }
