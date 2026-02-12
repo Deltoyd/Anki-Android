@@ -498,7 +498,20 @@ class PaintingPuzzleView(
         val destBottom = destTop + bmpHeight * scaleY
 
         tmpPieceRect.set(destLeft, destTop, destRight, destBottom)
+
+        // Draw painting clipped to piece shape underneath
+        val layerRect = RectF(destLeft, destTop, destRight, destBottom)
+        canvas.saveLayer(layerRect, null)
+        scaledBitmap?.let {
+            canvas.drawBitmap(it, puzzleRect.left, puzzleRect.top, null)
+        }
+        canvas.drawBitmap(bmp, null, tmpPieceRect, alphaMaskPaint)
+        canvas.restore()
+
+        // Draw gray PNG piece on top at 80% opacity
+        pieceBitmapPaint.alpha = 204
         canvas.drawBitmap(bmp, null, tmpPieceRect, pieceBitmapPaint)
+        pieceBitmapPaint.alpha = 255
     }
 
     /**
