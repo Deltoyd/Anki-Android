@@ -56,16 +56,16 @@ Requirements for fixing unlocked piece shapes and adding locked piece transparen
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SHPE-01 | TBD | Pending |
-| SHPE-02 | TBD | Pending |
-| TRANS-01 | TBD | Pending |
-| TRANS-02 | TBD | Pending |
+| SHPE-01 | Phase 2 | Pending |
+| SHPE-02 | Phase 2 | Pending |
+| TRANS-01 | Phase 3 | Pending |
+| TRANS-02 | Phase 3 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 4 total
-- Mapped to phases: 0
-- Unmapped: 4 (pending roadmap)
+- Mapped to phases: 4/4 ✓
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-12*
-*Last updated: 2026-02-12 after v1.1 redefinition*
+*Last updated: 2026-02-12 after v1.1 roadmap created*
