@@ -3,7 +3,7 @@
 ## Milestones
 
 - ✅ **v1.0 Museum Puzzle Piece Display Fix** - Phase 1 (shipped 2026-02-12)
-- 🚧 **v1.1 Puzzle Shape & Transparency Fix** - Phases 2-3 (in progress)
+- ✅ **v1.1 Puzzle Shape & Transparency Fix** - Phases 2-3 (shipped 2026-02-13)
 
 ## Overview
 
@@ -27,7 +27,7 @@ Plans:
 
 </details>
 
-### 🚧 v1.1 Puzzle Shape & Transparency Fix (In Progress)
+### ✅ v1.1 Puzzle Shape & Transparency Fix (Shipped 2026-02-13)
 
 **Milestone Goal:** Fix unlocked piece shapes to match locked PNG shapes, and make locked pieces semi-transparent so the painting teases through.
 
@@ -47,7 +47,7 @@ Plans:
 
 **Shipped:** 2026-02-12 (1 plan, 2 files changed, +59/-266 lines)
 
-#### Phase 3: Transparent Locked Pieces
+#### Phase 3: Transparent Locked Pieces (Complete)
 **Goal**: Locked pieces show the painting underneath at 80% opacity
 **Depends on**: Phase 2
 **Requirements**: TRANS-01, TRANS-02
@@ -58,7 +58,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 03-01-PLAN.md -- Add painting-through-locked-pieces rendering with 80% opacity overlay + visual verification
+- [x] 03-01: Add painting-through-locked-pieces rendering with 80% opacity overlay
 
 ## Progress
 
@@ -69,7 +69,7 @@ Phases execute in numeric order: 2 → 3
 |-------|-----------|----------------|--------|-----------|
 | 1. Puzzle Asset & Rendering Foundation | v1.0 | 2/2 | Complete | 2026-02-12 |
 | 2. Shape System Fix | v1.1 | 1/1 | Complete | 2026-02-12 |
-| 3. Transparent Locked Pieces | v1.1 | 0/1 | Planned | - |
+| 3. Transparent Locked Pieces | v1.1 | 1/1 | Complete | 2026-02-13 |
 
 ---
-*Last updated: 2026-02-13 — Phase 3 planned*
+*Last updated: 2026-02-13 — Phase 3 complete, v1.1 shipped*

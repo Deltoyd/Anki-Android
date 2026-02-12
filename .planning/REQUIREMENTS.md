@@ -9,13 +9,13 @@ Requirements for fixing unlocked piece shapes and adding locked piece transparen
 
 ### Shape Fix
 
-- [ ] **SHPE-01**: Unlocked pieces clip the painting to the same jigsaw shape as their locked PNG counterpart
-- [ ] **SHPE-02**: Unlocked piece borders match locked piece outlines (no visible shape mismatch)
+- [x] **SHPE-01**: Unlocked pieces clip the painting to the same jigsaw shape as their locked PNG counterpart
+- [x] **SHPE-02**: Unlocked piece borders match locked piece outlines (no visible shape mismatch)
 
 ### Transparency
 
-- [ ] **TRANS-01**: Locked pieces render at 80% opacity so the painting is visible underneath
-- [ ] **TRANS-02**: Unlocked pieces remain at full opacity (existing behavior unchanged)
+- [x] **TRANS-01**: Locked pieces render at 80% opacity so the painting is visible underneath
+- [x] **TRANS-02**: Unlocked pieces remain at full opacity (existing behavior unchanged)
 
 ## Future Requirements
 
@@ -58,8 +58,8 @@ Requirements for fixing unlocked piece shapes and adding locked piece transparen
 |-------------|-------|--------|
 | SHPE-01 | Phase 2 | Complete |
 | SHPE-02 | Phase 2 | Complete |
-| TRANS-01 | Phase 3 | Pending |
-| TRANS-02 | Phase 3 | Pending |
+| TRANS-01 | Phase 3 | Complete |
+| TRANS-02 | Phase 3 | Complete |
 
 **Coverage:**
 - v1.1 requirements: 4 total
@@ -68,4 +68,4 @@ Requirements for fixing unlocked piece shapes and adding locked piece transparen
 
 ---
 *Requirements defined: 2026-02-12*
-*Last updated: 2026-02-12 after v1.1 roadmap created*
+*Last updated: 2026-02-13 — all v1.1 requirements complete*
