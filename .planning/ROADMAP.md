@@ -1,0 +1,42 @@
+# Roadmap: Museum Puzzle Piece Display Fix
+
+## Overview
+
+Single-phase focused fix to replace 9 old puzzle piece PNG assets with 14 new gray gradient pieces and update the placement logic in PaintingPuzzleView.kt so locked pieces display as a unified, fully-assembled jigsaw with proper tab/hole interlocking.
+
+## Phases
+
+**Phase Numbering:**
+- Integer phases (1, 2, 3): Planned milestone work
+- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+
+Decimal phases appear between their surrounding integers in numeric order.
+
+- [ ] **Phase 1: Puzzle Assembly Fix** - Replace assets and fix placement logic for proper interlocking
+
+## Phase Details
+
+### Phase 1: Puzzle Assembly Fix
+**Goal**: Locked puzzle pieces display as one unified gray jigsaw with proper tab/hole interlocking
+**Depends on**: Nothing (first phase)
+**Requirements**: ASSET-01, ASSET-02, PLAC-01, PLAC-02, PLAC-03, REND-01, REND-02, REND-03
+**Success Criteria** (what must be TRUE):
+  1. All 14 new gray gradient PNG assets exist in drawable-nodpi/ with correct naming
+  2. Old 9 puzzle piece PNGs are removed from drawable-nodpi/
+  3. Corner pieces appear at exactly the four grid corners (0,0), (0,9), (9,0), (9,9)
+  4. Border and interior pieces alternate correctly using (row+col) % 2 pattern
+  5. When all pieces are locked, the visual result is one cohesive gray puzzle with tabs meeting holes
+**Plans**: 2 plans
+
+Plans:
+- [ ] 01-01: Replace puzzle piece assets (copy 14 new PNGs, remove 9 old PNGs)
+- [ ] 01-02: Update placement and rendering logic (getPieceType, pieceBitmaps map)
+
+## Progress
+
+**Execution Order:**
+Phases execute in numeric order.
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 1. Puzzle Assembly Fix | 0/2 | Not started | - |
