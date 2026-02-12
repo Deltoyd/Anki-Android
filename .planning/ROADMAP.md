@@ -55,10 +55,10 @@ Plans:
   1. User sees the masterpiece painting through all locked puzzle pieces
   2. Locked pieces render at 80% opacity (semi-transparent gray overlay teasing the painting)
   3. Unlocked pieces remain at full opacity (existing behavior unchanged)
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 03-01: TBD
+- [ ] 03-01-PLAN.md -- Add painting-through-locked-pieces rendering with 80% opacity overlay + visual verification
 
 ## Progress
 
@@ -69,7 +69,7 @@ Phases execute in numeric order: 2 → 3
 |-------|-----------|----------------|--------|-----------|
 | 1. Puzzle Asset & Rendering Foundation | v1.0 | 2/2 | Complete | 2026-02-12 |
 | 2. Shape System Fix | v1.1 | 1/1 | Complete | 2026-02-12 |
-| 3. Transparent Locked Pieces | v1.1 | 0/? | Not started | - |
+| 3. Transparent Locked Pieces | v1.1 | 0/1 | Planned | - |
 
 ---
-*Last updated: 2026-02-12 — Phase 2 complete*
+*Last updated: 2026-02-13 — Phase 3 planned*
