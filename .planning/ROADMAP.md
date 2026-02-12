@@ -43,7 +43,9 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 02-01-PLAN.md -- Replace path-based clipping with PNG alpha mask clipping for unlocked pieces
+- [x] 02-01: Replace path-based clipping with PNG alpha mask clipping for unlocked pieces
+
+**Shipped:** 2026-02-12 (1 plan, 2 files changed, +59/-266 lines)
 
 #### Phase 3: Transparent Locked Pieces
 **Goal**: Locked pieces show the painting underneath at 80% opacity
@@ -66,8 +68,8 @@ Phases execute in numeric order: 2 → 3
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 1. Puzzle Asset & Rendering Foundation | v1.0 | 2/2 | Complete | 2026-02-12 |
-| 2. Shape System Fix | v1.1 | 0/1 | Planned | - |
+| 2. Shape System Fix | v1.1 | 1/1 | Complete | 2026-02-12 |
 | 3. Transparent Locked Pieces | v1.1 | 0/? | Not started | - |
 
 ---
-*Last updated: 2026-02-12 — Phase 2 planned*
+*Last updated: 2026-02-12 — Phase 2 complete*

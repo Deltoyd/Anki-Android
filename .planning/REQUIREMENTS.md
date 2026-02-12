@@ -56,8 +56,8 @@ Requirements for fixing unlocked piece shapes and adding locked piece transparen
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SHPE-01 | Phase 2 | Pending |
-| SHPE-02 | Phase 2 | Pending |
+| SHPE-01 | Phase 2 | Complete |
+| SHPE-02 | Phase 2 | Complete |
 | TRANS-01 | Phase 3 | Pending |
 | TRANS-02 | Phase 3 | Pending |
 
