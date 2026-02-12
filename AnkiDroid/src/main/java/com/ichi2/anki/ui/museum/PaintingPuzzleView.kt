@@ -490,11 +490,14 @@ class PaintingPuzzleView(
                 "border_bottom_$variant"
             }
             col == 0 -> {
-                val variant = if ((row + col) % 2 == 0) 2 else 1
+                // Left border: variant 1 has vertical tabs (up+down), variant 2 has horizontal tab (right)
+                // Swapped relative to top/bottom borders so tabs meet holes at corners and interiors
+                val variant = if ((row + col) % 2 == 0) 1 else 2
                 "border_left_$variant"
             }
             col == COLS - 1 -> {
-                val variant = if ((row + col) % 2 == 0) 2 else 1
+                // Right border: same swap as left border for proper interlocking
+                val variant = if ((row + col) % 2 == 0) 1 else 2
                 "border_right_$variant"
             }
             else -> {
