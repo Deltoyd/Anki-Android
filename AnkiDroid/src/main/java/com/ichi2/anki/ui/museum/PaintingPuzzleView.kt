@@ -28,8 +28,38 @@ class PaintingPuzzleView(
         const val ROWS = 10
         const val TOTAL_PIECES = COLS * ROWS // 100
 
-        // How far tabs extend beyond the cell, as a fraction of piece size
-        private const val TAB_OVERFLOW = 0.25f
+        // The body size in every puzzle piece PNG (the square area excluding tabs).
+        // All 14 PNGs share this same body dimension; tabs extend beyond it.
+        private const val PNG_BODY_SIZE = 77f
+
+        /**
+         * Body offset (bodyX, bodyY) within each piece PNG.
+         * The body is the 77x77 square cell area; tabs extend beyond it.
+         * bodyX/bodyY indicate where the top-left of the body sits in PNG pixel coords.
+         */
+        private val PIECE_BODY_OFFSETS: Map<String, Pair<Float, Float>> =
+            mapOf(
+                // Corners: one tab each
+                "corner_tl" to Pair(0f, 0f), // 77x100, tab extends down
+                "corner_tr" to Pair(22f, 0f), // 99x77, tab extends left
+                "corner_bl" to Pair(0f, 0f), // 99x77, tab extends right
+                "corner_br" to Pair(0f, 22f), // 77x99, tab extends up
+                // Top border: variant 1 has horizontal tabs, variant 2 has vertical tab
+                "border_top_1" to Pair(22.5f, 0f), // 122x77, tabs left+right
+                "border_top_2" to Pair(0f, 0f), // 77x99, tab extends down
+                // Bottom border
+                "border_bottom_1" to Pair(22.5f, 0f), // 122x77, tabs left+right
+                "border_bottom_2" to Pair(0f, 22f), // 77x99, tab extends up
+                // Left border
+                "border_left_1" to Pair(0f, 22.5f), // 77x122, tabs up+down
+                "border_left_2" to Pair(0f, 0f), // 99x77, tab extends right
+                // Right border
+                "border_right_1" to Pair(0f, 22.5f), // 77x122, tabs up+down
+                "border_right_2" to Pair(22f, 0f), // 99x77, tab extends left
+                // Middle pieces
+                "middle_1" to Pair(22.5f, 0f), // 122x77, tabs left+right
+                "middle_2" to Pair(0f, 22.5f), // 77x122, tabs up+down
+            )
     }
 
     private var painting: Bitmap? = null
@@ -396,7 +426,15 @@ class PaintingPuzzleView(
 
     /**
      * Draws a locked piece using the appropriate custom PNG image.
-     * The dest rect accounts for tab protrusions extending beyond the cell.
+     *
+     * Each PNG contains a 77x77 "body" area (the main cell square) plus tab
+     * extensions that protrude beyond it. To render correctly:
+     * - The body must map exactly onto the grid cell (pieceWidth x pieceHeight)
+     * - Tabs must extend beyond the cell into neighboring cells
+     * - Adjacent pieces' tabs fill each other's holes, creating seamless interlocking
+     *
+     * We use per-piece body-offset data ([PIECE_BODY_OFFSETS]) to know where the
+     * body sits within each PNG, then scale so the body fills the cell exactly.
      */
     private fun drawLockedPiecePng(
         canvas: Canvas,
@@ -408,16 +446,26 @@ class PaintingPuzzleView(
         val pieceType = getPieceType(row, col)
         val bmp = pieceBitmaps[pieceType] ?: return
 
-        val tabW = pieceWidth * TAB_OVERFLOW
-        val tabH = pieceHeight * TAB_OVERFLOW
+        val bmpWidth = bmp.width.toFloat()
+        val bmpHeight = bmp.height.toFloat()
 
-        tmpPieceRect.set(
-            left - if (col > 0) tabW else 0f,
-            top - if (row > 0) tabH else 0f,
-            left + pieceWidth + if (col < COLS - 1) tabW else 0f,
-            top + pieceHeight + if (row < ROWS - 1) tabH else 0f,
-        )
+        // Scale factors: map the 77x77 body in the PNG to the cell dimensions.
+        // These may differ (non-uniform) when the cell is not square.
+        val scaleX = pieceWidth / PNG_BODY_SIZE
+        val scaleY = pieceHeight / PNG_BODY_SIZE
 
+        // Where the body's top-left sits within the PNG (in PNG pixels)
+        val (bodyX, bodyY) = PIECE_BODY_OFFSETS[pieceType] ?: Pair(0f, 0f)
+
+        // Position the entire bitmap so the body aligns with the grid cell.
+        // The bitmap's top-left in view coords = cell top-left minus the
+        // scaled body offset (so tabs before the body extend to the left/above).
+        val destLeft = left - bodyX * scaleX
+        val destTop = top - bodyY * scaleY
+        val destRight = destLeft + bmpWidth * scaleX
+        val destBottom = destTop + bmpHeight * scaleY
+
+        tmpPieceRect.set(destLeft, destTop, destRight, destBottom)
         canvas.drawBitmap(bmp, null, tmpPieceRect, pieceBitmapPaint)
     }
 
@@ -434,23 +482,23 @@ class PaintingPuzzleView(
             row == ROWS - 1 && col == 0 -> "corner_bl"
             row == ROWS - 1 && col == COLS - 1 -> "corner_br"
             row == 0 -> {
-                val variant = if ((row + col) % 2 == 0) 1 else 2
+                val variant = if ((row + col) % 2 == 0) 2 else 1
                 "border_top_$variant"
             }
             row == ROWS - 1 -> {
-                val variant = if ((row + col) % 2 == 0) 1 else 2
+                val variant = if ((row + col) % 2 == 0) 2 else 1
                 "border_bottom_$variant"
             }
             col == 0 -> {
-                val variant = if ((row + col) % 2 == 0) 1 else 2
+                val variant = if ((row + col) % 2 == 0) 2 else 1
                 "border_left_$variant"
             }
             col == COLS - 1 -> {
-                val variant = if ((row + col) % 2 == 0) 1 else 2
+                val variant = if ((row + col) % 2 == 0) 2 else 1
                 "border_right_$variant"
             }
             else -> {
-                val variant = if ((row + col) % 2 == 0) 1 else 2
+                val variant = if ((row + col) % 2 == 0) 2 else 1
                 "middle_$variant"
             }
         }
