@@ -2,21 +2,19 @@
 
 ## What This Is
 
-The AnkiDroid Museum homescreen features a 10x10 jigsaw puzzle overlay on masterpiece paintings. Locked pieces are semi-transparent gray, teasing the painting underneath. As users review flashcards throughout the day, puzzle pieces randomly unlock to reveal the painting — one card reviewed, one piece revealed. The puzzle resets daily, creating a daily motivation loop tied to study habits.
+The AnkiDroid Museum homescreen features a 10x10 jigsaw puzzle overlay on masterpiece paintings. Locked pieces are gray gradient PNGs with proper interlocking. As users review flashcards, puzzle pieces unlock to reveal the painting underneath. The visual goal is a seamless jigsaw where locked and unlocked pieces share the exact same shape.
 
 ## Core Value
 
 Studying flashcards progressively reveals a masterpiece — the puzzle is a daily visual reward that connects effort to beauty.
 
-## Current Milestone: v1.1 Daily Puzzle Reveal
+## Current Milestone: v1.1 Puzzle Shape & Transparency Fix
 
-**Goal:** Make locked puzzle pieces semi-transparent so the painting shows through, and tie piece unlocking to daily card reviews.
+**Goal:** Fix unlocked piece shapes to match locked PNG shapes, and make locked pieces semi-transparent so the painting teases through.
 
 **Target features:**
-- Semi-transparent locked pieces (50% opacity) showing painting underneath
-- 1 card review = 1 random puzzle piece unlocked
-- Daily reset — fresh puzzle each morning
-- Celebration cinematic when all 100 pieces revealed
+- Unlocked pieces clip to the same jigsaw shape as their locked PNG counterpart
+- Semi-transparent locked pieces (80% opacity) showing painting underneath
 
 ## Requirements
 
@@ -32,12 +30,8 @@ Studying flashcards progressively reveals a masterpiece — the puzzle is a dail
 
 ### Active
 
-- [ ] Locked pieces rendered at 50% opacity so painting is visible underneath
-- [ ] Museum reads today's card review count to determine unlocked pieces
-- [ ] 1 card reviewed = 1 random puzzle piece unlocked
-- [ ] Unlock state persists during the day (survives app restart)
-- [ ] Puzzle resets daily (new day = all pieces locked again)
-- [ ] Puzzle break cinematic plays when all 100 pieces revealed in a day
+- [ ] Unlocked pieces use the same jigsaw shape as their locked PNG counterpart
+- [ ] Locked pieces rendered at 80% opacity so painting is visible underneath
 
 ### Validated (v1.0)
 
@@ -50,20 +44,24 @@ Studying flashcards progressively reveals a masterpiece — the puzzle is a dail
 
 ### Out of Scope
 
-- Changing unlocked piece shapes (PuzzlePiecePathGenerator stays as-is) — user confirmed locked-only
 - Changing the puzzle grid dimensions (stays 10x10) — not requested
 - Changing the Museum layout, gallery, or animation systems — not requested
-- Changing the unlock/reward mechanics — not requested (v1.0 scope; now active in v1.1)
+- Card review-driven unlocking — deferred to v1.2
+- Daily midnight reset — deferred to v1.2
+- Completion celebration & collection — deferred to v1.2
 
 ## Context
 
 **Current state (post v1.0):** `PaintingPuzzleView.kt` uses 14 gray gradient PNG assets with a checkerboard variant system. `getPieceType()` maps grid positions using `(row+col) % 2` alternation (with inverted formula for left/right borders). `drawLockedPiecePng()` uses per-piece body offset calculations (`PIECE_BODY_OFFSETS` map) to position each jigsaw piece so tabs extend into neighboring cells and holes receive neighbors' tabs. The locked puzzle displays as one cohesive, fully-assembled gray jigsaw.
 
+**Known issue:** Unlocked pieces use `PuzzlePiecePathGenerator` to clip the painting, but that generator produces a different jigsaw shape than the 14 PNG assets. This causes a visible mismatch — unlocked pieces look like they belong to a different puzzle. v1.1 fixes this by deriving the clip path from the actual PNG shape.
+
 **Shipped v1.0** on 2026-02-12: 1 phase, 2 plans, 23 files changed, +1,383/-242 lines.
 
 **Key files:**
 - `AnkiDroid/src/main/java/com/ichi2/anki/ui/museum/PaintingPuzzleView.kt` — piece rendering and placement
-- `AnkiDroid/src/main/res/drawable-nodpi/puzzle_*.png` — current 9 PNG assets to replace
+- `AnkiDroid/src/main/java/com/ichi2/anki/ui/museum/PuzzlePiecePathGenerator.kt` — jigsaw clip paths for unlocked pieces (currently mismatched)
+- `AnkiDroid/src/main/res/drawable-nodpi/puzzle_*.png` — 14 gray gradient PNG assets
 
 ## Constraints
 
@@ -77,9 +75,11 @@ Studying flashcards progressively reveals a masterpiece — the puzzle is a dail
 |----------|-----------|---------|
 | Use 14 PNGs with 2 variants per category | Allows proper tab/hole interlocking between neighbors | ✓ Good |
 | Checkerboard alternation via (row+col) % 2 | Standard jigsaw pattern ensures adjacent pieces always complement | ✓ Good |
-| Keep PuzzlePiecePathGenerator unchanged | Unlocked pieces work fine; only locked display needs fixing | ✓ Good |
+| Keep PuzzlePiecePathGenerator unchanged | Was locked-only scope for v1.0; unlocked shape mismatch now being fixed in v1.1 | ⚠️ Revisit |
 | Inverted variant formula for left/right borders | Left/right PNG variants have swapped tab orientations vs top/bottom | ✓ Good |
 | Per-piece body offset rendering | Each PNG has different body-to-tab ratios; uniform scaling caused gaps | ✓ Good |
 
+| 80% opacity for locked piece transparency | User tested 50%, preferred more opaque. 80% keeps painting visible but gray dominant | — Pending |
+
 ---
-*Last updated: 2026-02-12 after v1.1 milestone start*
+*Last updated: 2026-02-12 after v1.1 milestone redefined*
