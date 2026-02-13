@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 Museum Puzzle Piece Display Fix** - Phase 1 (shipped 2026-02-12)
 - ✅ **v1.1 Puzzle Shape & Transparency Fix** - Phases 2-3 (shipped 2026-02-13)
-- 🚧 **v1.2 Streak & Gallery Redesign** - Phases 4-7 (in progress)
+- ✅ **v1.2 Streak & Gallery Redesign** - Phases 4-7 (shipped 2026-02-13)
 
 ## Phases
 
@@ -27,7 +27,8 @@
 
 </details>
 
-### 🚧 v1.2 Streak & Gallery Redesign (In Progress)
+<details>
+<summary>✅ v1.2 Streak & Gallery Redesign (Phases 4-7) - SHIPPED 2026-02-13</summary>
 
 **Milestone Goal:** Replace the homescreen heatmap with a streak bottom sheet and redesign the gallery to give the masterpiece full screen presence.
 
@@ -57,36 +58,29 @@ Plans:
 
 **Shipped:** 2026-02-13 (2 plans, 2 tasks, 3 files changed)
 
-#### Phase 6: Streak Widget & Bottom Sheet
+#### Phase 6: Streak Widget & Bottom Sheet ✓
 **Goal**: User can access streak data via toolbar widget and bottom sheet
 **Depends on**: Phase 5 (needs study data)
 **Requirements**: STRK-01, STRK-02, STRK-03, STRK-04
-**Success Criteria** (what must be TRUE):
-  1. User sees streak widget at top-left showing "Streak" label, day count, and 🔥 icon
-  2. User taps the streak widget to open the streak bottom sheet
-  3. User sees their current streak count in the bottom sheet
-  4. User sees total study time in the bottom sheet
+**Status**: Complete — 2026-02-13
 **Plans**: 1 plan, 1 wave
 
 Plans:
-- [ ] 06-01-PLAN.md -- Add streak pill to toolbar, create streak bottom sheet with streak count and total study time
+- [x] 06-01-PLAN.md -- Add streak pill to toolbar, create streak bottom sheet with streak count and total study time
 
-#### Phase 7: Heatmap Views
+#### Phase 7: Heatmap Views ✓
 **Goal**: User can view study history across weekly, monthly, and yearly timeframes
 **Depends on**: Phase 6 (needs bottom sheet container)
 **Requirements**: WEEK-01, WEEK-02, WEEK-03, MNTH-01, MNTH-02, MNTH-03, MNTH-04, YEAR-01, YEAR-02, YEAR-03
-**Success Criteria** (what must be TRUE):
-  1. User sees 7 day circles (M-S) in Week tab colored by study intensity (gray unstudied, #d36b52 shades studied)
-  2. User sees current day highlighted in Week tab
-  3. User sees calendar grid in Month tab with day circles colored by study intensity
-  4. User sees current day highlighted with ring in Month tab
-  5. User sees total study time for the month displayed
-  6. User sees compact dot heatmap in Year tab colored by study intensity
-  7. User sees total study time for the year displayed
-**Plans**: TBD
+**Status**: Complete — 2026-02-13
+**Plans**: 1 plan, 1 wave
 
 Plans:
-- [ ] 07-01: TBD
+- [x] 07-01-PLAN.md -- Week/Month/Year heatmap views with tabs in streak bottom sheet
+
+**Shipped:** 2026-02-13 (7 plans across 4 phases, 28 files changed)
+
+</details>
 
 ## Progress
 
@@ -100,8 +94,8 @@ Phases execute in numeric order: 4 → 5 → 6 → 7
 | 3. Transparent Locked Pieces | v1.1 | 1/1 | Complete | 2026-02-13 |
 | 4. Gallery Redesign | v1.2 | 2/2 | Complete | 2026-02-13 |
 | 5. Study Tracking | v1.2 | 2/2 | Complete | 2026-02-13 |
-| 6. Streak Widget | v1.2 | 0/1 | Planned | - |
-| 7. Heatmap Views | v1.2 | 0/1 | Not started | - |
+| 6. Streak Widget | v1.2 | 1/1 | Complete | 2026-02-13 |
+| 7. Heatmap Views | v1.2 | 1/1 | Complete | 2026-02-13 |
 
 ---
-*Last updated: 2026-02-13 — Phase 6 planned*
+*Last updated: 2026-02-13 — v1.2 SHIPPED*

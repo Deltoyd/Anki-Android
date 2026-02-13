@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-13)
 
 **Core value:** Studying flashcards progressively reveals a masterpiece — the puzzle is a daily visual reward that connects effort to beauty.
-**Current focus:** v1.2 Streak & Gallery Redesign - Phase 6 (Streak Widget) in progress
+**Current focus:** v1.2 Streak & Gallery Redesign - COMPLETE
 
 ## Current Position
 
-Phase: 6 of 7 (Streak Widget & Bottom Sheet)
+Phase: 7 of 7 (Heatmap Views)
 Plan: 1 of 1 complete
 Status: Phase complete
-Last activity: 2026-02-13 — Completed 06-01-PLAN.md
+Last activity: 2026-02-13 — Completed 07-01-PLAN.md
 
-Progress: [██████░░░░] 86% (6/7 phases complete)
+Progress: [██████████] 100% (7/7 phases complete)
 
 ## Performance Metrics
 
@@ -33,7 +33,7 @@ Progress: [██████░░░░] 86% (6/7 phases complete)
 | 4. Gallery Redesign | 6 (GALR) | 2/2 complete | 22m 19s | 5 | 7 |
 | 5. Study Tracking | 1 (STRK-05) | 2/2 complete | 19m 55s | 2 | 4 |
 | 6. Streak Widget | 4 (STRK) | 1/1 complete | 7m 23s | 2 | 8 |
-| 7. Heatmap Views | 10 (WEEK, MNTH, YEAR) | TBD | - | - | - |
+| 7. Heatmap Views | 10 (WEEK, MNTH, YEAR) | 1/1 complete | 7m 00s | 1 | 9 |
 
 ## Accumulated Context
 
@@ -57,6 +57,9 @@ Recent decisions affecting v1.2:
 - [Phase 06-01]: Streak pill placed as left-most toolbar element (maximizes visibility per user spec)
 - [Phase 06-01]: Fire emoji in pill and bottom sheet (universal gamification symbol)
 - [Phase 06-01]: Grace days shown in bottom sheet stats row (transparency for streak resilience)
+- [Phase 07-01]: ViewFlipper over ViewPager2 for tab content (simpler, static content)
+- [Phase 07-01]: Custom Canvas views for heatmaps (precise control, small datasets)
+- [Phase 07-01]: HorizontalScrollView for YearHeatmapView (365 days may exceed screen width)
 
 ### Pending Todos
 
@@ -69,8 +72,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Completed 06-01-PLAN.md (Streak Widget & Bottom Sheet)
-Resume: Phase 6 complete (1/1 plans). Ready for Phase 7 (Heatmap Views).
+Stopped at: Completed 07-01-PLAN.md (Heatmap Views)
+Resume: v1.2 milestone complete. All 7 phases finished.
 
 ---
-*Next: Plan and execute Phase 7 (Heatmap Views)*
+*v1.2 Streak & Gallery Redesign: SHIPPED 2026-02-13*
