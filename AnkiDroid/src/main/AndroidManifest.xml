@@ -120,6 +120,10 @@
             android:name="com.ichi2.anki.MuseumActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity
+            android:name="com.ichi2.anki.MainContainerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="false" />
+        <activity
             android:name=".ui.onboarding.TopicSelectionActivity"
             android:exported="false" />
         <activity

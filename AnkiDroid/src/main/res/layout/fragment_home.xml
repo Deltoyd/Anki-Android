@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/museolingo_bg">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Simplified Top Bar: Streak Only -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingTop="8dp"
+                android:paddingBottom="16dp">
+
+                <!-- Streak Pill -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/streakPill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="🔥 0"
+                    android:textSize="14sp"
+                    android:textColor="@color/museolingo_streak_text"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    app:backgroundTint="@color/museolingo_streak_pill_bg"
+                    app:cornerRadius="18dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp" />
+
+            </LinearLayout>
+
+            <!-- Gallery ViewPager -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/galleryPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:clipChildren="false"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <!-- Cinematic puzzle break overlay -->
+                <com.ichi2.anki.ui.museum.PuzzleBreakAnimationView
+                    android:id="@+id/puzzleBreakOverlay"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toTopOf="@id/galleryPager"
+                    app:layout_constraintBottom_toBottomOf="@id/galleryPager"
+                    app:layout_constraintStart_toStartOf="@id/galleryPager"
+                    app:layout_constraintEnd_toEndOf="@id/galleryPager" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Page indicator dots -->
+            <LinearLayout
+                android:id="@+id/pageIndicator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp" />
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/captionText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@color/museolingo_text"
+                android:fontFamily="serif"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:paddingTop="4dp"
+                android:paddingBottom="0dp" />
+
+            <!-- Artist -->
+            <TextView
+                android:id="@+id/artistText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="@color/museolingo_text_secondary"
+                android:fontFamily="serif"
+                android:gravity="center"
+                android:paddingBottom="16dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom CTA Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/reviewButton"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom"
+        android:layout_margin="16dp"
+        android:text="📖  Review Cards"
+        android:textSize="16sp"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        app:backgroundTint="@color/museolingo_amber"
+        app:cornerRadius="28dp" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

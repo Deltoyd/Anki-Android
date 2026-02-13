@@ -488,5 +488,18 @@ opening the system text to speech settings fails">Failed to open text to speech 
     <string name="heatmap_tab_month">Month</string>
     <string name="heatmap_tab_year">Year</string>
     <string name="heatmap_study_time_label">Study time: %s</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_library">Library</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Library -->
+    <string name="library_title">Library</string>
+    <string name="library_edit">Edit</string>
+    <string name="library_cards_due">Cards for today: %d</string>
+    <string name="library_no_decks">No decks yet</string>
+    <string name="library_create_deck">Create deck</string>
+    <string name="library_import_deck">Import deck</string>
 </resources>
 

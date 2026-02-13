@@ -70,7 +70,7 @@ class IntentHandler : AbstractIntentHandler() {
         super.onCreate(savedInstanceState)
         val intent = intent
         Timber.v(intent.toString())
-        val reloadIntent = Intent(this, MuseumActivity::class.java)
+        val reloadIntent = Intent(this, MainContainerActivity::class.java)
         reloadIntent.setDataAndType(getIntent().data, getIntent().type)
         val action = intent.action
         // #6157 - We want to block actions that need permissions we don't have, but not the default case
