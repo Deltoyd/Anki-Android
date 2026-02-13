@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 
 ## Current Position
 
-Phase: 4 of 7 (Gallery Redesign)
-Plan: 2 of 2 complete
-Status: Phase complete
-Last activity: 2026-02-13 — Completed 04-02-PLAN.md
+Phase: 5 of 7 (Study Tracking)
+Plan: 1 of 2 complete
+Status: In progress
+Last activity: 2026-02-13 — Completed 05-01-PLAN.md
 
-Progress: [████░░░░░░] 57% (4/7 phases complete)
+Progress: [█████░░░░░] 71% (5/7 phases in progress)
 
 ## Performance Metrics
 
@@ -31,7 +31,7 @@ Progress: [████░░░░░░] 57% (4/7 phases complete)
 | Phase | Requirements | Plans | Duration | Tasks | Files |
 |-------|--------------|-------|----------|-------|-------|
 | 4. Gallery Redesign | 6 (GALR) | 2/2 complete | 22m 19s | 5 | 7 |
-| 5. Study Tracking | 1 (STRK-05) | TBD | - | - | - |
+| 5. Study Tracking | 1 (STRK-05) | 1/2 complete | 10m 25s | 1 | 2 |
 | 6. Streak Widget | 4 (STRK) | TBD | - | - | - |
 | 7. Heatmap Views | 10 (WEEK, MNTH, YEAR) | TBD | - | - | - |
 
@@ -52,6 +52,7 @@ Recent decisions affecting v1.2:
 - Removed lock icon overlay - blur alone communicates locked state (04-02)
 - Gallery always starts on active painting (removed position persistence) (04-02)
 - Filter completed paintings at ViewModel level (single source of truth) (04-02)
+- [Phase 05]: Two-pass streak algorithm (backward to find extent, forward to accumulate grace)
 
 ### Pending Todos
 
@@ -64,8 +65,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Completed 04-02-PLAN.md (Gallery filtering and navigation)
-Resume: Phase 4 complete. Begin Phase 5 (Study Tracking) when ready.
+Stopped at: Completed 05-01-PLAN.md (Study Tracking Repository with TDD)
+Resume: Phase 5 in progress (1 of 2 plans complete). Continue with 05-02 when ready.
 
 ---
 *Next: Plan and execute Phase 5 (Study Tracking)*
