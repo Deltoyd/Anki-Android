@@ -8,7 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.ichi2.anki.AnkiActivity
-import com.ichi2.anki.MuseumActivity
+import com.ichi2.anki.MainContainerActivity
 import com.ichi2.anki.databinding.ActivityArtSelectionBinding
 import com.ichi2.anki.databinding.ItemArtMasonryBinding
 import com.ichi2.anki.model.art.ArtPiece
@@ -65,7 +65,7 @@ class ArtSelectionActivity : AnkiActivity() {
             MuseumPersistence.setOnboardingComplete(this@ArtSelectionActivity, true)
 
             // Launch museum with clear top
-            val intent = Intent(this@ArtSelectionActivity, MuseumActivity::class.java)
+            val intent = Intent(this@ArtSelectionActivity, MainContainerActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
             finish()
