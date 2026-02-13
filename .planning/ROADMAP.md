@@ -31,21 +31,18 @@
 
 **Milestone Goal:** Replace the homescreen heatmap with a streak bottom sheet and redesign the gallery to give the masterpiece full screen presence.
 
-#### Phase 4: Gallery Redesign
+#### Phase 4: Gallery Redesign ✓
 **Goal**: Masterpiece takes full lower homescreen with proper state rendering
 **Depends on**: Phase 3 (v1.1)
 **Requirements**: GALR-01, GALR-02, GALR-03, GALR-04, GALR-05, GALR-06
-**Success Criteria** (what must be TRUE):
-  1. User sees masterpiece area occupying full lower homescreen (heatmap removed)
-  2. User sees puzzle overlay on the active painting
-  3. User sees completed paintings fully revealed without puzzle overlay
-  4. User sees locked paintings as blurred/dimmed
-  5. User can swipe through gallery to browse all painting states
-**Plans**: 2 plans
+**Status**: Complete — 2026-02-13
+**Plans**: 2 plans, 2 waves
 
 Plans:
-- [ ] 04-01-PLAN.md -- Remove heatmap and stats, expand painting area, add title/artist label
-- [ ] 04-02-PLAN.md -- Filter gallery to active+locked, add locked blur, implement circular wrap-around
+- [x] 04-01-PLAN.md -- Remove heatmap and stats, expand painting area, add title/artist label
+- [x] 04-02-PLAN.md -- Filter gallery to active+locked, add locked blur, implement circular wrap-around
+
+**Shipped:** 2026-02-13 (2 plans, 4 tasks, 6 files changed)
 
 #### Phase 5: Study Tracking & Data Layer
 **Goal**: System tracks study sessions and calculates streak/intensity data
@@ -102,10 +99,10 @@ Phases execute in numeric order: 4 → 5 → 6 → 7
 | 1. Puzzle Asset & Rendering Foundation | v1.0 | 2/2 | Complete | 2026-02-12 |
 | 2. Shape System Fix | v1.1 | 1/1 | Complete | 2026-02-13 |
 | 3. Transparent Locked Pieces | v1.1 | 1/1 | Complete | 2026-02-13 |
-| 4. Gallery Redesign | v1.2 | 0/2 | Planned | - |
+| 4. Gallery Redesign | v1.2 | 2/2 | Complete | 2026-02-13 |
 | 5. Study Tracking | v1.2 | 0/1 | Not started | - |
 | 6. Streak Widget | v1.2 | 0/1 | Not started | - |
 | 7. Heatmap Views | v1.2 | 0/1 | Not started | - |
 
 ---
-*Last updated: 2026-02-13 — Phase 4 planned (2 plans)*
+*Last updated: 2026-02-13 — Phase 4 complete*

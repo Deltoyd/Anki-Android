@@ -88,12 +88,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | YEAR-01 | Phase 7 | Pending |
 | YEAR-02 | Phase 7 | Pending |
 | YEAR-03 | Phase 7 | Pending |
-| GALR-01 | Phase 4 | Pending |
-| GALR-02 | Phase 4 | Pending |
-| GALR-03 | Phase 4 | Pending |
-| GALR-04 | Phase 4 | Pending |
-| GALR-05 | Phase 4 | Pending |
-| GALR-06 | Phase 4 | Pending |
+| GALR-01 | Phase 4 | Complete |
+| GALR-02 | Phase 4 | Complete |
+| GALR-03 | Phase 4 | Complete |
+| GALR-04 | Phase 4 | Complete (modified: excluded from gallery per user decision) |
+| GALR-05 | Phase 4 | Complete |
+| GALR-06 | Phase 4 | Complete |
 
 **Coverage:**
 - v1.2 requirements: 20 total
@@ -102,4 +102,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-13*
-*Last updated: 2026-02-13 after v1.2 roadmap created*
+*Last updated: 2026-02-13 after Phase 4 complete*
