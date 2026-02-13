@@ -15,9 +15,10 @@ class StudyTrackingRepository {
         /**
          * Queries revlog for all reviews in date range.
          * revlog.id is timestamp in ms, revlog.time is review duration in ms.
-         * Called within withCol {} block.
+         * Called within withCol {} block (which provides coroutine context).
+         * Not marked suspend as it performs synchronous DB operations.
          */
-        suspend fun queryRevlog(
+        fun queryRevlog(
             db: DB,
             fromDate: LocalDate,
             toDate: LocalDate,

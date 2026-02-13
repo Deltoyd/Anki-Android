@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
 
 class MuseumViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(MuseumUiState())
@@ -30,8 +31,7 @@ class MuseumViewModel : ViewModel() {
 
     fun loadMuseumData(context: Context) {
         viewModelScope.launch {
-            val streakDays = MuseumPersistence.getStreakDays(context)
-            val extraLives = MuseumPersistence.getExtraLives(context)
+            val (streakInfo, todayTimeMs, todayCards) = loadStudyStats()
 
             val currentDeckName =
                 try {
@@ -49,14 +49,29 @@ class MuseumViewModel : ViewModel() {
 
             _uiState.update {
                 it.copy(
-                    streakDays = streakDays,
-                    extraLives = extraLives,
+                    streakDays = streakInfo.currentStreak,
+                    graceDaysAvailable = streakInfo.graceDaysAvailable,
+                    todayStudyTimeMs = todayTimeMs,
+                    todayCardsReviewed = todayCards,
                     currentDeckName = currentDeckName,
                 )
             }
 
             // Load gallery data
             loadGalleryData(context)
+        }
+    }
+
+    private suspend fun loadStudyStats(): Triple<StreakInfo, Long, Int> {
+        val today = LocalDate.now()
+        val fromDate = today.minusDays(365)
+
+        return withCol {
+            val entries = StudyTrackingRepository.queryRevlog(db, fromDate, today)
+            val dailyData = StudyTrackingRepository.getDailyStudyData(entries, fromDate, today)
+            val streakInfo = StudyTrackingRepository.calculateStreak(dailyData, today)
+            val todayData = dailyData[today]
+            Triple(streakInfo, todayData?.studyTimeMs ?: 0L, todayData?.cardsReviewed ?: 0)
         }
     }
 
@@ -206,13 +221,14 @@ class MuseumViewModel : ViewModel() {
 
     fun refreshData(context: Context) {
         viewModelScope.launch {
-            val streakDays = MuseumPersistence.getStreakDays(context)
-            val extraLives = MuseumPersistence.getExtraLives(context)
+            val (streakInfo, todayTimeMs, todayCards) = loadStudyStats()
 
             _uiState.update {
                 it.copy(
-                    streakDays = streakDays,
-                    extraLives = extraLives,
+                    streakDays = streakInfo.currentStreak,
+                    graceDaysAvailable = streakInfo.graceDaysAvailable,
+                    todayStudyTimeMs = todayTimeMs,
+                    todayCardsReviewed = todayCards,
                 )
             }
 
@@ -226,7 +242,9 @@ data class MuseumUiState(
     val painting: Bitmap? = null,
     val unlockedPieces: Set<Int> = emptySet(),
     val streakDays: Int = 0,
-    val extraLives: Int = 3,
+    val graceDaysAvailable: Int = 0,
+    val todayStudyTimeMs: Long = 0,
+    val todayCardsReviewed: Int = 0,
     val progressText: String = "0 / 100 pieces",
     val currentDeckName: String = "Default",
     val galleryItems: List<GalleryArtItem> = emptyList(),
