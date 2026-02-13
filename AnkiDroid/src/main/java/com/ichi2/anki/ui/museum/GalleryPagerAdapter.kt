@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 class GalleryPagerAdapter(
     private val artService: ArtAssetService,
     private val onPeekClick: (Int) -> Unit,
+    private val onChangeClick: (() -> Unit)? = null,
 ) : RecyclerView.Adapter<GalleryPagerAdapter.GalleryViewHolder>() {
     private var items: List<GalleryArtItem> = emptyList()
     private val bitmapCache = mutableMapOf<String, Bitmap?>()
@@ -90,6 +91,7 @@ class GalleryPagerAdapter(
             binding.paintingView.visibility = View.VISIBLE
             binding.progressContainer.visibility = View.VISIBLE
             binding.peekButton.visibility = View.VISIBLE
+            binding.changeMasterpieceButton.visibility = View.VISIBLE
 
             val cached = bitmapCache[item.artPiece.id]
             if (cached != null) {
@@ -110,6 +112,10 @@ class GalleryPagerAdapter(
 
             binding.peekButton.setOnClickListener {
                 onPeekClick(bindingAdapterPosition)
+            }
+
+            binding.changeMasterpieceButton.setOnClickListener {
+                onChangeClick?.invoke()
             }
         }
 

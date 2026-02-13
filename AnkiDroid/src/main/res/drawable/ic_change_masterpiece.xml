@@ -1,0 +1,14 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Rounded square (open top-right) -->
+    <path
+        android:pathData="M19,19H5c-1.1,0 -2,-0.9 -2,-2V7c0,-1.1 0.9,-2 2,-2h7v2H5v10h14v-7h2v7c0,1.1 -0.9,2 -2,2z"
+        android:fillColor="@android:color/white" />
+    <!-- Pencil -->
+    <path
+        android:pathData="M18.41,3.59c-0.78,-0.78 -2.05,-0.78 -2.83,0L9,10.17V13h2.83l6.59,-6.59c0.78,-0.78 0.78,-2.05 0,-2.83zM11.17,11.5H10.5v-0.67l5.09,-5.09 0.67,0.67z"
+        android:fillColor="@android:color/white" />
+</vector>

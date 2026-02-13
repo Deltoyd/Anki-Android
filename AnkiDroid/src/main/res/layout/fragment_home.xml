@@ -98,22 +98,7 @@
                 android:textColor="@color/museolingo_text_secondary"
                 android:fontFamily="serif"
                 android:gravity="center"
-                android:paddingBottom="4dp" />
-
-            <!-- Change Masterpiece -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/changeMasterpieceButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/change_masterpiece"
-                android:textSize="13sp"
-                android:textColor="@color/museolingo_amber"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:minHeight="0dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:paddingBottom="8dp" />
+                android:paddingBottom="16dp" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

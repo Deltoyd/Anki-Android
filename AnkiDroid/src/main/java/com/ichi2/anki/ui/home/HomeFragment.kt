@@ -64,9 +64,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private fun setupGallery() {
         val artService = ArtAssetService(requireContext())
         galleryAdapter =
-            GalleryPagerAdapter(artService) { position ->
-                showPeekPreview(position)
-            }
+            GalleryPagerAdapter(
+                artService,
+                onPeekClick = { position -> showPeekPreview(position) },
+                onChangeClick = {
+                    startActivity(Intent(requireContext(), ArtSelectionActivity::class.java))
+                },
+            )
         binding.galleryPager.adapter = galleryAdapter
         binding.galleryPager.offscreenPageLimit = 1
         binding.galleryPager.isUserInputEnabled = false
@@ -121,10 +125,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         binding.reviewButton.setOnClickListener {
             startActivity(Intent(requireContext(), Reviewer::class.java))
-        }
-
-        binding.changeMasterpieceButton.setOnClickListener {
-            startActivity(Intent(requireContext(), ArtSelectionActivity::class.java))
         }
     }
 
