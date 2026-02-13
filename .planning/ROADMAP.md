@@ -44,20 +44,18 @@ Plans:
 
 **Shipped:** 2026-02-13 (2 plans, 4 tasks, 6 files changed)
 
-#### Phase 5: Study Tracking & Data Layer
+#### Phase 5: Study Tracking & Data Layer ✓
 **Goal**: System tracks study sessions and calculates streak/intensity data
 **Depends on**: Nothing (independent data layer)
 **Requirements**: STRK-05
-**Success Criteria** (what must be TRUE):
-  1. System marks a day as studied when user reviews at least 1 card
-  2. System calculates consecutive days studied (streak count)
-  3. System tracks total study time per day
-  4. System provides study intensity data (for coloring heatmap views)
+**Status**: Complete — 2026-02-13
 **Plans**: 2 plans, 2 waves
 
 Plans:
-- [ ] 05-01-PLAN.md -- TDD: StudyTrackingRepository with revlog queries, streak/grace calculation, intensity levels
-- [ ] 05-02-PLAN.md -- Wire StudyTrackingRepository into MuseumViewModel, replace SharedPreferences streak
+- [x] 05-01-PLAN.md -- TDD: StudyTrackingRepository with revlog queries, streak/grace calculation, intensity levels
+- [x] 05-02-PLAN.md -- Wire StudyTrackingRepository into MuseumViewModel, replace SharedPreferences streak
+
+**Shipped:** 2026-02-13 (2 plans, 2 tasks, 3 files changed)
 
 #### Phase 6: Streak Widget & Bottom Sheet
 **Goal**: User can access streak data via toolbar widget and bottom sheet
@@ -101,9 +99,9 @@ Phases execute in numeric order: 4 → 5 → 6 → 7
 | 2. Shape System Fix | v1.1 | 1/1 | Complete | 2026-02-13 |
 | 3. Transparent Locked Pieces | v1.1 | 1/1 | Complete | 2026-02-13 |
 | 4. Gallery Redesign | v1.2 | 2/2 | Complete | 2026-02-13 |
-| 5. Study Tracking | v1.2 | 0/2 | Not started | - |
+| 5. Study Tracking | v1.2 | 2/2 | Complete | 2026-02-13 |
 | 6. Streak Widget | v1.2 | 0/1 | Not started | - |
 | 7. Heatmap Views | v1.2 | 0/1 | Not started | - |
 
 ---
-*Last updated: 2026-02-13 — Phase 4 complete*
+*Last updated: 2026-02-13 — Phase 5 complete*

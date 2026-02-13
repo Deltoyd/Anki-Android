@@ -13,7 +13,7 @@ Requirements for Streak & Gallery Redesign. Each maps to roadmap phases.
 - [ ] **STRK-02**: User taps the streak pill to open the streak bottom sheet
 - [ ] **STRK-03**: User sees their current streak count (consecutive days studied) in the bottom sheet
 - [ ] **STRK-04**: User sees total study time in the bottom sheet
-- [ ] **STRK-05**: Reviewing at least 1 card marks a day as studied
+- [x] **STRK-05**: Reviewing at least 1 card marks a day as studied
 
 ### Weekly View
 
@@ -77,7 +77,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | STRK-02 | Phase 6 | Pending |
 | STRK-03 | Phase 6 | Pending |
 | STRK-04 | Phase 6 | Pending |
-| STRK-05 | Phase 5 | Pending |
+| STRK-05 | Phase 5 | Complete |
 | WEEK-01 | Phase 7 | Pending |
 | WEEK-02 | Phase 7 | Pending |
 | WEEK-03 | Phase 7 | Pending |

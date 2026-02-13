@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-02-13)
 
 **Core value:** Studying flashcards progressively reveals a masterpiece — the puzzle is a daily visual reward that connects effort to beauty.
-**Current focus:** v1.2 Streak & Gallery Redesign - Phase 4 (Gallery Redesign)
+**Current focus:** v1.2 Streak & Gallery Redesign - Phase 5 (Study Tracking) complete
 
 ## Current Position
 
@@ -70,4 +70,4 @@ Stopped at: Completed 05-02-PLAN.md (ViewModel Integration)
 Resume: Phase 5 complete (2/2 plans). Ready for Phase 6 (Streak Widget).
 
 ---
-*Next: Plan and execute Phase 5 (Study Tracking)*
+*Next: Plan and execute Phase 6 (Streak Widget)*
