@@ -67,6 +67,7 @@ class MuseumActivity : AnkiActivity() {
                     if (position in items.indices) {
                         val item = items[position]
                         binding.captionText.text = item.artPiece.title
+                        binding.artistText.text = item.artPiece.artist ?: ""
                         PageIndicatorHelper.updateCurrentPage(
                             binding.pageIndicator,
                             items,
@@ -112,10 +113,11 @@ class MuseumActivity : AnkiActivity() {
                         binding.galleryPager.currentItem,
                     )
 
-                    // Update caption
+                    // Update caption and artist
                     val currentPos = binding.galleryPager.currentItem
                     if (currentPos in state.galleryItems.indices) {
                         binding.captionText.text = state.galleryItems[currentPos].artPiece.title
+                        binding.artistText.text = state.galleryItems[currentPos].artPiece.artist ?: ""
                     }
                 }
 
