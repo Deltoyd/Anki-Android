@@ -85,6 +85,9 @@ class StudyTrackingRepository {
          * Grace consumption: Missing a day with grace > 0 consumes 1 grace, streak continues.
          * Streak breaks: Missing a day with grace == 0 resets streak to 0.
          * Today not studied: todayStatus = NOT_STUDIED, streak counts up to yesterday.
+         *
+         * Algorithm: Walk backward from today to find all days in current streak, then
+         * replay forward to calculate grace days correctly.
          */
         fun calculateStreak(
             dailyData: Map<LocalDate, DailyStudyData>,
@@ -97,44 +100,81 @@ class StudyTrackingRepository {
                     else -> DayStatus.STUDIED
                 }
 
-            // Walk backward from today (or yesterday if today not studied)
-            val startDate = if (todayStatus == DayStatus.NOT_STUDIED) today.minusDays(1) else today
+            // Start from today or yesterday if today not studied
+            val endDate = if (todayStatus == DayStatus.NOT_STUDIED) today.minusDays(1) else today
 
-            var currentStreak = 0
-            var graceDays = 0
-            var consecutiveStudyDays = 0 // For grace accumulation
-            var checkDate = startDate
+            // Find the earliest date by simulating backward walk with grace accumulation
+            // We need to know about future grace to determine if past gaps can be filled
+            // So we collect all potential streak days first
+            val potentialDays = mutableListOf<Pair<LocalDate, Boolean>>() // (date, wasStudied)
+            var checkDate = endDate
 
-            while (true) {
+            // Collect days going backward - we'll check for data availability
+            // Stop when we hit multiple consecutive unstudied days that would break any streak
+            var consecutiveUnstudied = 0
+            val maxLookback = 365 // Don't look back more than a year
+
+            for (i in 0 until maxLookback) {
                 val dayData = dailyData[checkDate]
+                val wasStudied = dayData?.wasStudied ?: false
+                potentialDays.add(Pair(checkDate, wasStudied))
 
-                if (dayData == null || !dayData.wasStudied) {
-                    // Day not studied
-                    if (graceDays > 0) {
-                        // Consume grace, streak continues
-                        graceDays--
-                        currentStreak++
-                        consecutiveStudyDays = 0 // Reset consecutive counter after grace use
-                    } else {
-                        // No grace, streak breaks
+                if (!wasStudied) {
+                    consecutiveUnstudied++
+                    // If we have 6+ consecutive unstudied days, streak definitely can't continue
+                    // (max 5 grace days)
+                    if (consecutiveUnstudied > 5) {
                         break
                     }
                 } else {
+                    consecutiveUnstudied = 0
+                }
+
+                checkDate = checkDate.minusDays(1)
+            }
+
+            // Now walk forward through potentialDays (reverse the list) to find actual streak
+            val daysOldestFirst = potentialDays.reversed()
+            var graceDays = 0
+            var consecutiveStudyDays = 0
+            var streakStartIndex = -1
+
+            // Find where the valid streak starts
+            for (i in daysOldestFirst.indices) {
+                val (_, wasStudied) = daysOldestFirst[i]
+
+                if (!wasStudied) {
+                    // Need grace to continue
+                    if (graceDays > 0) {
+                        graceDays--
+                        consecutiveStudyDays = 0
+                        if (streakStartIndex == -1) streakStartIndex = i
+                    } else {
+                        // Can't continue, reset
+                        graceDays = 0
+                        consecutiveStudyDays = 0
+                        streakStartIndex = -1
+                    }
+                } else {
                     // Day studied
-                    currentStreak++
+                    if (streakStartIndex == -1) streakStartIndex = i
                     consecutiveStudyDays++
 
-                    // Earn grace day every 3 consecutive actual study days
+                    // Earn grace every 3 consecutive study days
                     if (consecutiveStudyDays >= 3 && consecutiveStudyDays % 3 == 0) {
                         if (graceDays < 5) {
                             graceDays++
                         }
                     }
                 }
-
-                // Move to previous day
-                checkDate = checkDate.minusDays(1)
             }
+
+            val currentStreak =
+                if (streakStartIndex == -1) {
+                    0
+                } else {
+                    daysOldestFirst.size - streakStartIndex
+                }
 
             return StreakInfo(
                 currentStreak = currentStreak,
