@@ -13,6 +13,7 @@ import com.ichi2.anki.ui.museum.MuseumEvent
 import com.ichi2.anki.ui.museum.MuseumPersistence
 import com.ichi2.anki.ui.museum.MuseumViewModel
 import com.ichi2.anki.ui.museum.PageIndicatorHelper
+import com.ichi2.anki.ui.museum.StreakBottomSheet
 import com.ichi2.anki.ui.onboarding.TopicSelectionActivity
 import kotlinx.coroutines.launch
 
@@ -126,6 +127,9 @@ class MuseumActivity : AnkiActivity() {
 
                 // Update deck selector button
                 binding.languageSelector.text = state.currentDeckName
+
+                // Update streak pill text
+                binding.streakPill.text = getString(R.string.streak_pill_format, state.streakDays)
             }
         }
 
@@ -144,6 +148,10 @@ class MuseumActivity : AnkiActivity() {
     }
 
     private fun setupButtons() {
+        binding.streakPill.setOnClickListener {
+            StreakBottomSheet().show(supportFragmentManager, StreakBottomSheet.TAG)
+        }
+
         binding.languageSelector.setOnClickListener {
             showDeckSelectorDialog()
         }
