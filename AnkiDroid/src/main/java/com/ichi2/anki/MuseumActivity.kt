@@ -13,11 +13,8 @@ import com.ichi2.anki.ui.museum.MuseumEvent
 import com.ichi2.anki.ui.museum.MuseumPersistence
 import com.ichi2.anki.ui.museum.MuseumViewModel
 import com.ichi2.anki.ui.museum.PageIndicatorHelper
-import com.ichi2.anki.ui.museum.toDateKey
 import com.ichi2.anki.ui.onboarding.TopicSelectionActivity
 import kotlinx.coroutines.launch
-import java.util.Calendar
-import java.util.Random
 
 class MuseumActivity : AnkiActivity() {
     private lateinit var binding: ActivityMuseumBinding
@@ -43,8 +40,6 @@ class MuseumActivity : AnkiActivity() {
         setupGallery()
         setupObservers()
         setupButtons()
-        setupStats()
-        setupHeatmap()
 
         viewModel.loadMuseumData(this)
     }
@@ -53,7 +48,6 @@ class MuseumActivity : AnkiActivity() {
         super.onResume()
         if (::binding.isInitialized) {
             viewModel.refreshData(this)
-            updateStats()
         }
     }
 
@@ -144,35 +138,6 @@ class MuseumActivity : AnkiActivity() {
         }
     }
 
-    private fun setupStats() {
-        updateStats()
-    }
-
-    private fun updateStats() {
-        val streakDays = MuseumPersistence.getStreakDays(this)
-        binding.streakStat.text = "🔥 $streakDays"
-
-        val cardsToday = 0
-        binding.todayStat.text = "📖 $cardsToday today"
-    }
-
-    private fun setupHeatmap() {
-        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-        binding.heatmapYear.text = currentYear.toString()
-
-        val activityData = generateMockActivityData()
-        binding.heatmapView.setActivityData(activityData)
-
-        val totalReviews = activityData.values.sum()
-        val activeDays = activityData.size
-        binding.heatmapSubheader.text = "$totalReviews reviews   $activeDays days"
-
-        binding.heatmapView.onDayTapped = { dateKey ->
-            val cards = activityData[dateKey] ?: 0
-            showThemedToast(this, "$dateKey — $cards cards reviewed", false)
-        }
-    }
-
     private fun setupButtons() {
         binding.languageSelector.setOnClickListener {
             showDeckSelectorDialog()
@@ -242,28 +207,5 @@ class MuseumActivity : AnkiActivity() {
                 dialog.dismiss()
             }.setCancelable(false)
             .show()
-    }
-
-    private fun generateMockActivityData(): Map<String, Int> {
-        val data = mutableMapOf<String, Int>()
-        val random = Random(42)
-        val streakDays = MuseumPersistence.getStreakDays(this)
-
-        for (i in 0..120) {
-            val date =
-                Calendar.getInstance().apply {
-                    add(Calendar.DAY_OF_MONTH, -i)
-                }
-            if (i < streakDays || random.nextFloat() < 0.6f) {
-                val cards =
-                    if (i < streakDays) {
-                        random.nextInt(15) + 10
-                    } else {
-                        random.nextInt(25) + 5
-                    }
-                data[date.toDateKey()] = cards
-            }
-        }
-        return data
     }
 }
