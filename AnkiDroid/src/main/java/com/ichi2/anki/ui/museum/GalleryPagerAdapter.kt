@@ -17,19 +17,27 @@ class GalleryPagerAdapter(
     private var items: List<GalleryArtItem> = emptyList()
     private val bitmapCache = mutableMapOf<String, Bitmap?>()
 
+    companion object {
+        private const val MULTIPLIER = 1000
+    }
+
     fun submitList(newItems: List<GalleryArtItem>) {
         items = newItems
         notifyDataSetChanged()
     }
 
     fun updateActivePainting(painting: Bitmap?) {
-        val activeIndex = items.indexOfFirst { it.state == ArtPieceState.ACTIVE }
-        if (activeIndex >= 0 && painting != null) {
-            val artPiece = items[activeIndex].artPiece
+        // Active painting is always at real index 0 after filtering
+        if (items.isNotEmpty() && painting != null) {
+            val artPiece = items[0].artPiece
             bitmapCache[artPiece.id] = painting
-            notifyItemChanged(activeIndex)
+            notifyDataSetChanged()
         }
     }
+
+    fun getRealPosition(virtualPosition: Int): Int = if (items.isEmpty()) 0 else virtualPosition % items.size
+
+    fun getStartPosition(): Int = if (items.isEmpty()) 0 else (MULTIPLIER / 2) * items.size
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -48,10 +56,10 @@ class GalleryPagerAdapter(
         holder: GalleryViewHolder,
         position: Int,
     ) {
-        holder.bind(items[position])
+        holder.bind(items[position % items.size])
     }
 
-    override fun getItemCount() = items.size
+    override fun getItemCount() = if (items.isEmpty()) 0 else items.size * MULTIPLIER
 
     inner class GalleryViewHolder(
         private val binding: ItemGalleryPageBinding,

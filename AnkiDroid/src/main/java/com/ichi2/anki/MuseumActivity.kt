@@ -24,6 +24,9 @@ class MuseumActivity : AnkiActivity() {
     /** Ensures the cinematic break animation plays only once per activity creation. */
     private var hasPlayedBreakAnimation = false
 
+    /** Flag to ensure initial page is set only once. */
+    private var hasSetInitialPage = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -63,17 +66,17 @@ class MuseumActivity : AnkiActivity() {
         binding.galleryPager.registerOnPageChangeCallback(
             object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
+                    val realPos = galleryAdapter.getRealPosition(position)
                     val items = viewModel.uiState.value.galleryItems
-                    if (position in items.indices) {
-                        val item = items[position]
+                    if (realPos in items.indices) {
+                        val item = items[realPos]
                         binding.captionText.text = item.artPiece.title
                         binding.artistText.text = item.artPiece.artist ?: ""
                         PageIndicatorHelper.updateCurrentPage(
                             binding.pageIndicator,
                             items,
-                            position,
+                            realPos,
                         )
-                        MuseumPersistence.setGalleryPosition(this@MuseumActivity, position)
                     }
                 }
             },
@@ -99,25 +102,25 @@ class MuseumActivity : AnkiActivity() {
                         }
                     }
 
-                    // Set initial page
-                    if (binding.galleryPager.currentItem != state.activePageIndex &&
-                        state.activePageIndex in state.galleryItems.indices
-                    ) {
-                        binding.galleryPager.setCurrentItem(state.activePageIndex, false)
+                    // Set initial page once (at center of virtual range, on active painting)
+                    if (!hasSetInitialPage && state.galleryItems.isNotEmpty()) {
+                        hasSetInitialPage = true
+                        val startPos = galleryAdapter.getStartPosition()
+                        binding.galleryPager.setCurrentItem(startPos, false)
                     }
 
-                    // Update indicators
+                    // Update indicators using real position
+                    val currentRealPos = galleryAdapter.getRealPosition(binding.galleryPager.currentItem)
                     PageIndicatorHelper.setupIndicators(
                         binding.pageIndicator,
                         state.galleryItems,
-                        binding.galleryPager.currentItem,
+                        currentRealPos,
                     )
 
-                    // Update caption and artist
-                    val currentPos = binding.galleryPager.currentItem
-                    if (currentPos in state.galleryItems.indices) {
-                        binding.captionText.text = state.galleryItems[currentPos].artPiece.title
-                        binding.artistText.text = state.galleryItems[currentPos].artPiece.artist ?: ""
+                    // Update caption and artist using real position
+                    if (currentRealPos in state.galleryItems.indices) {
+                        binding.captionText.text = state.galleryItems[currentRealPos].artPiece.title
+                        binding.artistText.text = state.galleryItems[currentRealPos].artPiece.artist ?: ""
                     }
                 }
 
