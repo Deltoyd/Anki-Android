@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 ## Current Position
 
 Phase: 4 of 7 (Gallery Redesign)
-Plan: 1 of 2 complete
-Status: Executing phase
-Last activity: 2026-02-13 — Completed 04-01-PLAN.md
+Plan: 2 of 2 complete
+Status: Phase complete
+Last activity: 2026-02-13 — Completed 04-02-PLAN.md
 
-Progress: [████░░░░░░] 50% (3.5/7 phases complete)
+Progress: [████░░░░░░] 57% (4/7 phases complete)
 
 ## Performance Metrics
 
@@ -30,7 +30,7 @@ Progress: [████░░░░░░] 50% (3.5/7 phases complete)
 
 | Phase | Requirements | Plans | Duration | Tasks | Files |
 |-------|--------------|-------|----------|-------|-------|
-| 4. Gallery Redesign | 6 (GALR) | 1/2 complete | 7m 19s | 2 | 2 |
+| 4. Gallery Redesign | 6 (GALR) | 2/2 complete | 22m 19s | 5 | 7 |
 | 5. Study Tracking | 1 (STRK-05) | TBD | - | - | - |
 | 6. Streak Widget | 4 (STRK) | TBD | - | - | - |
 | 7. Heatmap Views | 10 (WEEK, MNTH, YEAR) | TBD | - | - | - |
@@ -48,6 +48,10 @@ Recent decisions affecting v1.2:
 - Removed heatmap from homescreen to maximize masterpiece visibility (04-01)
 - Removed deck stats row to reduce visual clutter (04-01)
 - Used layout_weight=1 for gallery to fill remaining vertical space (04-01)
+- Scale-based blur technique for locked paintings (cross-API compatibility) (04-02)
+- Removed lock icon overlay - blur alone communicates locked state (04-02)
+- Gallery always starts on active painting (removed position persistence) (04-02)
+- Filter completed paintings at ViewModel level (single source of truth) (04-02)
 
 ### Pending Todos
 
@@ -60,8 +64,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Completed 04-01-PLAN.md (Gallery homescreen layout)
-Resume: Execute 04-02-PLAN.md (next plan in Phase 4)
+Stopped at: Completed 04-02-PLAN.md (Gallery filtering and navigation)
+Resume: Phase 4 complete. Begin Phase 5 (Study Tracking) when ready.
 
 ---
-*Next: Execute 04-02-PLAN.md*
+*Next: Plan and execute Phase 5 (Study Tracking)*
