@@ -58,9 +58,7 @@ class MuseumActivity : AnkiActivity() {
     private fun setupGallery() {
         val artService = ArtAssetService(this)
         galleryAdapter =
-            GalleryPagerAdapter(artService, onPeekClick = { position ->
-                showPeekPreview(position)
-            })
+            GalleryPagerAdapter(artService)
         binding.galleryPager.adapter = galleryAdapter
         binding.galleryPager.offscreenPageLimit = 1
 

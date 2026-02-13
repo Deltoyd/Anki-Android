@@ -12,8 +12,6 @@ import kotlinx.coroutines.launch
 
 class GalleryPagerAdapter(
     private val artService: ArtAssetService,
-    private val onPeekClick: (Int) -> Unit,
-    private val onChangeClick: (() -> Unit)? = null,
 ) : RecyclerView.Adapter<GalleryPagerAdapter.GalleryViewHolder>() {
     private var items: List<GalleryArtItem> = emptyList()
     private val bitmapCache = mutableMapOf<String, Bitmap?>()
@@ -72,10 +70,6 @@ class GalleryPagerAdapter(
             binding.paintingView.visibility = View.GONE
             binding.completedImage.visibility = View.GONE
             binding.lockedOverlay.visibility = View.GONE
-            binding.progressContainer.visibility = View.GONE
-            binding.peekButton.visibility = View.GONE
-            binding.completedBadge.visibility = View.GONE
-            binding.lockedText.visibility = View.GONE
 
             when (item.state) {
                 ArtPieceState.ACTIVE -> bindActive(item, filename)
@@ -89,9 +83,6 @@ class GalleryPagerAdapter(
             filename: String,
         ) {
             binding.paintingView.visibility = View.VISIBLE
-            binding.progressContainer.visibility = View.VISIBLE
-            binding.peekButton.visibility = View.VISIBLE
-            binding.changeMasterpieceButton.visibility = View.VISIBLE
 
             val cached = bitmapCache[item.artPiece.id]
             if (cached != null) {
@@ -107,16 +98,6 @@ class GalleryPagerAdapter(
             }
 
             binding.paintingView.setUnlockedPieces(item.unlockedPieces)
-            binding.progressBar.progress = item.progressPercent
-            binding.progressText.text = "${item.unlockedPieces.size}/${item.artPiece.puzzlePiecesTotal}"
-
-            binding.peekButton.setOnClickListener {
-                onPeekClick(bindingAdapterPosition)
-            }
-
-            binding.changeMasterpieceButton.setOnClickListener {
-                onChangeClick?.invoke()
-            }
         }
 
         private fun bindCompleted(
@@ -124,7 +105,6 @@ class GalleryPagerAdapter(
             filename: String,
         ) {
             binding.completedImage.visibility = View.VISIBLE
-            binding.completedBadge.visibility = View.VISIBLE
 
             MainScope().launch {
                 val bitmap =
@@ -139,7 +119,6 @@ class GalleryPagerAdapter(
             filename: String,
         ) {
             binding.lockedOverlay.visibility = View.VISIBLE
-            binding.lockedText.visibility = View.VISIBLE
 
             MainScope().launch {
                 val bitmap =
