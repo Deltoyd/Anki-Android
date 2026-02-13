@@ -117,14 +117,16 @@ class MuseumViewModel : ViewModel() {
                             unlockedPieces = unlockedPieces,
                             progressPercent = progressPercent,
                         )
-                    }.sortedBy {
+                    }.filter { it.state != ArtPieceState.COMPLETED }
+                    .sortedBy {
                         when (it.state) {
                             ArtPieceState.ACTIVE -> 0
-                            ArtPieceState.COMPLETED -> 1
                             ArtPieceState.LOCKED -> 2
+                            ArtPieceState.COMPLETED -> 1 // Dead code after filter
                         }
                     }
 
+            // Active painting is always sorted to index 0
             activePageIndex = 0
 
             // Load active piece painting bitmap
@@ -134,8 +136,8 @@ class MuseumViewModel : ViewModel() {
                 activePainting = withContext(Dispatchers.IO) { artService.loadArtBitmap(filename) }
             }
 
-            val savedPosition = MuseumPersistence.getGalleryPosition(context)
-            val initialPage = if (savedPosition in galleryItems.indices) savedPosition else activePageIndex
+            // Always start on active painting (index 0)
+            val initialPage = 0
 
             _uiState.update {
                 it.copy(

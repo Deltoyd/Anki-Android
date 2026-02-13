@@ -11,7 +11,6 @@ object PageIndicatorHelper {
     private const val DOT_SPACING_DP = 4
 
     private const val COLOR_AMBER = 0xFFF4A21D.toInt() // Active page
-    private const val COLOR_GREEN = 0xFF4CAF50.toInt() // Completed
     private const val COLOR_GRAY_FILLED = 0xFFBDBDBD.toInt() // Locked
     private const val COLOR_GRAY_HOLLOW_STROKE = 0xFF9E9E9E.toInt()
 
@@ -40,11 +39,14 @@ object PageIndicatorHelper {
                 drawable.setColor(COLOR_AMBER)
             } else {
                 when (item.state) {
-                    ArtPieceState.COMPLETED -> drawable.setColor(COLOR_GREEN)
                     ArtPieceState.ACTIVE -> drawable.setColor(COLOR_AMBER)
                     ArtPieceState.LOCKED -> {
                         drawable.setColor(0x00000000) // transparent fill
                         drawable.setStroke(dpToPx(context, 1), COLOR_GRAY_HOLLOW_STROKE)
+                    }
+                    ArtPieceState.COMPLETED -> {
+                        // Dead code - completed items are filtered out
+                        drawable.setColor(COLOR_AMBER)
                     }
                 }
             }
@@ -73,7 +75,6 @@ object PageIndicatorHelper {
                 drawable.setColor(COLOR_AMBER)
             } else {
                 when (item.state) {
-                    ArtPieceState.COMPLETED -> drawable.setColor(COLOR_GREEN)
                     ArtPieceState.ACTIVE -> drawable.setColor(COLOR_AMBER)
                     ArtPieceState.LOCKED -> {
                         drawable.setColor(0x00000000)
@@ -81,6 +82,10 @@ object PageIndicatorHelper {
                             dpToPx(container.context, 1),
                             COLOR_GRAY_HOLLOW_STROKE,
                         )
+                    }
+                    ArtPieceState.COMPLETED -> {
+                        // Dead code - completed items are filtered out
+                        drawable.setColor(COLOR_AMBER)
                     }
                 }
             }

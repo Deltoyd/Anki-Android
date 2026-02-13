@@ -131,8 +131,21 @@ class GalleryPagerAdapter(
                 val bitmap =
                     bitmapCache[item.artPiece.id]
                         ?: artService.loadArtBitmap(filename)?.also { bitmapCache[item.artPiece.id] = it }
-                bitmap?.let { binding.lockedImage.setImageBitmap(it) }
+                bitmap?.let {
+                    val blurred = blurBitmap(it)
+                    binding.lockedImage.setImageBitmap(blurred)
+                }
             }
+        }
+
+        private fun blurBitmap(
+            src: Bitmap,
+            scaleFactor: Float = 0.125f,
+        ): Bitmap {
+            val width = (src.width * scaleFactor).toInt().coerceAtLeast(1)
+            val height = (src.height * scaleFactor).toInt().coerceAtLeast(1)
+            val small = Bitmap.createScaledBitmap(src, width, height, true)
+            return Bitmap.createScaledBitmap(small, src.width, src.height, true)
         }
     }
 }
