@@ -2,11 +2,23 @@
 
 ## What This Is
 
-The AnkiDroid Museum homescreen features a 10x10 jigsaw puzzle overlay on masterpiece paintings. Locked pieces are semi-transparent gray gradient PNGs (80% opacity) that tease the painting underneath. As users review flashcards, puzzle pieces unlock to reveal the painting at full opacity. Both locked and unlocked pieces share the exact same jigsaw shapes via PNG alpha mask compositing.
+The AnkiDroid Museum homescreen features a masterpiece painting gallery with a 10x10 jigsaw puzzle overlay on the active painting. A streak system tracks daily study activity — tapping the fire button in the toolbar opens a bottom sheet showing weekly, monthly, and yearly study heatmaps. The masterpiece gallery occupies the full lower homescreen, with active paintings showing the puzzle, completed paintings fully revealed, and locked paintings blurred.
 
 ## Core Value
 
 Studying flashcards progressively reveals a masterpiece — the puzzle is a daily visual reward that connects effort to beauty.
+
+## Current Milestone: v1.2 Streak & Gallery Redesign
+
+**Goal:** Replace the homescreen heatmap with a streak bottom sheet and redesign the gallery to give the masterpiece full screen presence.
+
+**Target features:**
+- Streak button (🔥) in toolbar opens a bottom sheet
+- Bottom sheet with Week/Month/Year tabs showing study heatmaps
+- Streak count + study time display
+- Remove heatmap from homescreen
+- Gallery states: active (puzzle), completed (full painting), locked (blurred)
+- Masterpiece takes full lower homescreen area
 
 ## Requirements
 
@@ -30,17 +42,24 @@ Studying flashcards progressively reveals a masterpiece — the puzzle is a dail
 
 ### Active
 
-_(None — next milestone requirements TBD)_
+- [ ] Streak button (🔥) in toolbar opens streak bottom sheet
+- [ ] Weekly view: 7 day circles with study intensity coloring
+- [ ] Monthly view: calendar grid with day circles colored by intensity
+- [ ] Yearly view: compact dot heatmap
+- [ ] Streak count + study time displayed in bottom sheet
+- [ ] Remove heatmap from homescreen
+- [ ] Gallery states: active (puzzle overlay), completed (full painting), locked (blurred/dimmed)
+- [ ] Masterpiece area takes full lower homescreen
 
 ### Out of Scope
 
 - Changing the puzzle grid dimensions (stays 10x10) — not requested
-- Changing the Museum layout, gallery, or animation systems — not requested
-- Streak counter — creates loss aversion anxiety; conflicts with Anki's flexible study philosophy
 - Adjustable opacity slider — settings creep; 80% is user-tested
 - Multiple simultaneous puzzles — adds complexity; validate single puzzle first
+- Study goals / minimum thresholds — any card reviewed counts as studied
+- Push notifications for streak maintenance — not requested
 
-### Future (v1.2 candidates)
+### Future (v1.3+ candidates)
 
 - Card review-driven unlocking (one piece per card review)
 - Daily midnight reset of incomplete puzzles
@@ -59,11 +78,18 @@ _(None — next milestone requirements TBD)_
 - `AnkiDroid/src/main/java/com/ichi2/anki/ui/museum/PaintingPuzzleView.kt` — piece rendering and placement
 - `AnkiDroid/src/main/res/drawable-nodpi/puzzle_*.png` — 14 gray gradient PNG assets
 
+**Design references (v1.2):**
+- Weekly bottom sheet: Ikasi-style streak sheet with fire icon + 7 day circles
+- Monthly view: Calendar grid with colored day circles (reference: Ikasi monthly heatmap)
+- Yearly view: Compact dot heatmap (reference: Ikasi yearly view)
+- Colors: Gray (unstudied) → #d36b52 shades (studied, darker = more)
+
 ## Constraints
 
 - **Assets**: User-provided PNGs must be used as-is (no procedural generation for locked pieces)
 - **Compatibility**: Must not break unlocked piece rendering or animations
 - **Module**: Changes confined to AnkiDroid module only
+- **Color**: Study intensity uses #d36b52 color family, gray for unstudied
 
 ## Key Decisions
 
@@ -76,6 +102,9 @@ _(None — next milestone requirements TBD)_
 | PorterDuff DST_IN with saveLayer for alpha mask compositing | Pixel-perfect shape clipping using PNG alpha channel | ✓ Good |
 | Delete PuzzlePiecePathGenerator entirely | No other usages; eliminates dual-shape system and 239 lines of dead code | ✓ Good |
 | 80% opacity for locked piece transparency | User tested 50%, preferred more opaque. 80% keeps gray dominant with painting hint | ✓ Good |
+| Streak bottom sheet replaces homescreen heatmap | Frees homescreen space for masterpiece; streak is on-demand, not always visible | — Pending |
+| Any card reviewed = studied day | Low friction; encourages daily habit without pressure of meeting a quota | — Pending |
+| #d36b52 color family for study intensity | User-specified; warm tone contrasts with gray unstudied days | — Pending |
 
 ---
-*Last updated: 2026-02-13 after v1.1 milestone*
+*Last updated: 2026-02-13 after v1.2 milestone started*
