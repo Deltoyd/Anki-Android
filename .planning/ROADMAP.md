@@ -41,10 +41,11 @@
   3. User sees completed paintings fully revealed without puzzle overlay
   4. User sees locked paintings as blurred/dimmed
   5. User can swipe through gallery to browse all painting states
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: TBD
+- [ ] 04-01-PLAN.md -- Remove heatmap and stats, expand painting area, add title/artist label
+- [ ] 04-02-PLAN.md -- Filter gallery to active+locked, add locked blur, implement circular wrap-around
 
 #### Phase 5: Study Tracking & Data Layer
 **Goal**: System tracks study sessions and calculates streak/intensity data
@@ -101,10 +102,10 @@ Phases execute in numeric order: 4 → 5 → 6 → 7
 | 1. Puzzle Asset & Rendering Foundation | v1.0 | 2/2 | Complete | 2026-02-12 |
 | 2. Shape System Fix | v1.1 | 1/1 | Complete | 2026-02-13 |
 | 3. Transparent Locked Pieces | v1.1 | 1/1 | Complete | 2026-02-13 |
-| 4. Gallery Redesign | v1.2 | 0/1 | Not started | - |
+| 4. Gallery Redesign | v1.2 | 0/2 | Planned | - |
 | 5. Study Tracking | v1.2 | 0/1 | Not started | - |
 | 6. Streak Widget | v1.2 | 0/1 | Not started | - |
 | 7. Heatmap Views | v1.2 | 0/1 | Not started | - |
 
 ---
-*Last updated: 2026-02-13 — v1.2 roadmap created*
+*Last updated: 2026-02-13 — Phase 4 planned (2 plans)*
