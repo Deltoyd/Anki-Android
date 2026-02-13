@@ -66,10 +66,10 @@ Plans:
   2. User taps the streak widget to open the streak bottom sheet
   3. User sees their current streak count in the bottom sheet
   4. User sees total study time in the bottom sheet
-**Plans**: TBD
+**Plans**: 1 plan, 1 wave
 
 Plans:
-- [ ] 06-01: TBD
+- [ ] 06-01-PLAN.md -- Add streak pill to toolbar, create streak bottom sheet with streak count and total study time
 
 #### Phase 7: Heatmap Views
 **Goal**: User can view study history across weekly, monthly, and yearly timeframes
@@ -100,8 +100,8 @@ Phases execute in numeric order: 4 → 5 → 6 → 7
 | 3. Transparent Locked Pieces | v1.1 | 1/1 | Complete | 2026-02-13 |
 | 4. Gallery Redesign | v1.2 | 2/2 | Complete | 2026-02-13 |
 | 5. Study Tracking | v1.2 | 2/2 | Complete | 2026-02-13 |
-| 6. Streak Widget | v1.2 | 0/1 | Not started | - |
+| 6. Streak Widget | v1.2 | 0/1 | Planned | - |
 | 7. Heatmap Views | v1.2 | 0/1 | Not started | - |
 
 ---
-*Last updated: 2026-02-13 — Phase 5 complete*
+*Last updated: 2026-02-13 — Phase 6 planned*
