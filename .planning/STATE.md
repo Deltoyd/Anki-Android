@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 ## Current Position
 
 Phase: 5 of 7 (Study Tracking)
-Plan: 1 of 2 complete
-Status: In progress
-Last activity: 2026-02-13 — Completed 05-01-PLAN.md
+Plan: 2 of 2 complete
+Status: Phase complete
+Last activity: 2026-02-13 — Completed 05-02-PLAN.md
 
 Progress: [█████░░░░░] 71% (5/7 phases in progress)
 
@@ -31,7 +31,7 @@ Progress: [█████░░░░░] 71% (5/7 phases in progress)
 | Phase | Requirements | Plans | Duration | Tasks | Files |
 |-------|--------------|-------|----------|-------|-------|
 | 4. Gallery Redesign | 6 (GALR) | 2/2 complete | 22m 19s | 5 | 7 |
-| 5. Study Tracking | 1 (STRK-05) | 1/2 complete | 10m 25s | 1 | 2 |
+| 5. Study Tracking | 1 (STRK-05) | 2/2 complete | 19m 55s | 2 | 4 |
 | 6. Streak Widget | 4 (STRK) | TBD | - | - | - |
 | 7. Heatmap Views | 10 (WEEK, MNTH, YEAR) | TBD | - | - | - |
 
@@ -52,7 +52,8 @@ Recent decisions affecting v1.2:
 - Removed lock icon overlay - blur alone communicates locked state (04-02)
 - Gallery always starts on active painting (removed position persistence) (04-02)
 - Filter completed paintings at ViewModel level (single source of truth) (04-02)
-- [Phase 05]: Two-pass streak algorithm (backward to find extent, forward to accumulate grace)
+- [Phase 05-01]: Two-pass streak algorithm (backward to find extent, forward to accumulate grace)
+- [Phase 05-02]: Removed suspend from queryRevlog (withCol lambda is not suspend context)
 
 ### Pending Todos
 
@@ -65,8 +66,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Completed 05-01-PLAN.md (Study Tracking Repository with TDD)
-Resume: Phase 5 in progress (1 of 2 plans complete). Continue with 05-02 when ready.
+Stopped at: Completed 05-02-PLAN.md (ViewModel Integration)
+Resume: Phase 5 complete (2/2 plans). Ready for Phase 6 (Streak Widget).
 
 ---
 *Next: Plan and execute Phase 5 (Study Tracking)*
