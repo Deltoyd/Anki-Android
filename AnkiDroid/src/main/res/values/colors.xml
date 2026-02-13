@@ -167,6 +167,12 @@
     <color name="museolingo_heatmap_darkest">#2D7A4E</color>
     <color name="museolingo_card_shadow">#10000000</color>
 
+    <!-- Streak colors (#d36b52 family per user spec) -->
+    <color name="museolingo_streak_pill_bg">#FFF0EC</color>
+    <color name="museolingo_streak_text">#D36B52</color>
+    <color name="museolingo_streak_accent">#D36B52</color>
+    <color name="museolingo_streak_accent_light">#E8998A</color>
+
     <!-- Legacy IKASI colors (aliases for backwards compatibility) -->
     <color name="ikasi_bg">@color/museolingo_bg</color>
     <color name="ikasi_text">@color/museolingo_text</color>

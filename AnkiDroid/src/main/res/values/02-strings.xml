@@ -470,5 +470,17 @@ opening the system text to speech settings fails">Failed to open text to speech 
     <string name="art_completed_label">Completed</string>
     <string name="start_studying_to_unlock">Start studying to unlock</string>
     <string name="art_preview_button">Preview Art</string>
+
+    <!-- Streak -->
+    <string name="streak_pill_format">Streak %d 🔥</string>
+    <string name="streak_bottom_sheet_title">Your Streak</string>
+    <string name="streak_days_format">%d days</string>
+    <string name="streak_total_study_time">Total Study Time</string>
+    <string name="streak_current_streak">Current Streak</string>
+    <string name="streak_grace_days">Grace Days</string>
+    <string name="streak_grace_days_format">%d remaining</string>
+    <string name="streak_time_hours_minutes">%dh %dm</string>
+    <string name="streak_time_minutes">%dm</string>
+    <string name="streak_time_seconds">%ds</string>
 </resources>
 
