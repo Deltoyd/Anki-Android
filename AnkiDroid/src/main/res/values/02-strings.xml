@@ -507,5 +507,6 @@ opening the system text to speech settings fails">Failed to open text to speech 
     <string name="welcome_subtitle">Learn languages through art</string>
     <string name="welcome_quick_start">Quick Start</string>
     <string name="welcome_have_account">I have an account</string>
+    <string name="change_masterpiece">Change Masterpiece</string>
 </resources>
 

@@ -6,7 +6,6 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.viewpager2.widget.ViewPager2
 import com.ichi2.anki.MainContainerActivity
 import com.ichi2.anki.R
 import com.ichi2.anki.Reviewer
@@ -15,8 +14,8 @@ import com.ichi2.anki.services.ArtAssetService
 import com.ichi2.anki.ui.museum.GalleryPagerAdapter
 import com.ichi2.anki.ui.museum.MuseumEvent
 import com.ichi2.anki.ui.museum.MuseumViewModel
-import com.ichi2.anki.ui.museum.PageIndicatorHelper
 import com.ichi2.anki.ui.museum.StreakBottomSheet
+import com.ichi2.anki.ui.onboarding.ArtSelectionActivity
 import dev.androidbroadcast.vbpd.viewBinding
 import kotlinx.coroutines.launch
 
@@ -70,25 +69,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
         binding.galleryPager.adapter = galleryAdapter
         binding.galleryPager.offscreenPageLimit = 1
-
-        binding.galleryPager.registerOnPageChangeCallback(
-            object : ViewPager2.OnPageChangeCallback() {
-                override fun onPageSelected(position: Int) {
-                    val realPos = galleryAdapter.getRealPosition(position)
-                    val items = viewModel.uiState.value.galleryItems
-                    if (realPos in items.indices) {
-                        val item = items[realPos]
-                        binding.captionText.text = item.artPiece.title
-                        binding.artistText.text = item.artPiece.artist ?: ""
-                        PageIndicatorHelper.updateCurrentPage(
-                            binding.pageIndicator,
-                            items,
-                            realPos,
-                        )
-                    }
-                }
-            },
-        )
+        binding.galleryPager.isUserInputEnabled = false
     }
 
     private fun setupObservers() {
@@ -113,12 +94,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     }
 
                     val currentRealPos = galleryAdapter.getRealPosition(binding.galleryPager.currentItem)
-                    PageIndicatorHelper.setupIndicators(
-                        binding.pageIndicator,
-                        state.galleryItems,
-                        currentRealPos,
-                    )
-
                     if (currentRealPos in state.galleryItems.indices) {
                         binding.captionText.text = state.galleryItems[currentRealPos].artPiece.title
                         binding.artistText.text = state.galleryItems[currentRealPos].artPiece.artist ?: ""
@@ -146,6 +121,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         binding.reviewButton.setOnClickListener {
             startActivity(Intent(requireContext(), Reviewer::class.java))
+        }
+
+        binding.changeMasterpieceButton.setOnClickListener {
+            startActivity(Intent(requireContext(), ArtSelectionActivity::class.java))
         }
     }
 
