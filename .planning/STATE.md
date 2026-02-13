@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 ## Current Position
 
 Phase: 4 of 7 (Gallery Redesign)
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-02-13 — v1.2 roadmap created
+Plan: 1 of 2 complete
+Status: Executing phase
+Last activity: 2026-02-13 — Completed 04-01-PLAN.md
 
-Progress: [███░░░░░░░] 43% (3/7 phases complete)
+Progress: [████░░░░░░] 50% (3.5/7 phases complete)
 
 ## Performance Metrics
 
@@ -28,12 +28,12 @@ Progress: [███░░░░░░░] 43% (3/7 phases complete)
 
 **v1.2 Phase Structure:**
 
-| Phase | Requirements | Plans |
-|-------|--------------|-------|
-| 4. Gallery Redesign | 6 (GALR) | TBD |
-| 5. Study Tracking | 1 (STRK-05) | TBD |
-| 6. Streak Widget | 4 (STRK) | TBD |
-| 7. Heatmap Views | 10 (WEEK, MNTH, YEAR) | TBD |
+| Phase | Requirements | Plans | Duration | Tasks | Files |
+|-------|--------------|-------|----------|-------|-------|
+| 4. Gallery Redesign | 6 (GALR) | 1/2 complete | 7m 19s | 2 | 2 |
+| 5. Study Tracking | 1 (STRK-05) | TBD | - | - | - |
+| 6. Streak Widget | 4 (STRK) | TBD | - | - | - |
+| 7. Heatmap Views | 10 (WEEK, MNTH, YEAR) | TBD | - | - | - |
 
 ## Accumulated Context
 
@@ -45,6 +45,9 @@ Recent decisions affecting v1.2:
 - Streak bottom sheet replaces homescreen heatmap (frees space for masterpiece)
 - Any card reviewed = studied day (low friction daily habit)
 - #d36b52 color family for study intensity (user-specified warm tone)
+- Removed heatmap from homescreen to maximize masterpiece visibility (04-01)
+- Removed deck stats row to reduce visual clutter (04-01)
+- Used layout_weight=1 for gallery to fill remaining vertical space (04-01)
 
 ### Pending Todos
 
@@ -57,8 +60,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: v1.2 roadmap created, ready to plan Phase 4
-Resume: Run `/gsd:plan-phase 4` to create execution plan
+Stopped at: Completed 04-01-PLAN.md (Gallery homescreen layout)
+Resume: Execute 04-02-PLAN.md (next plan in Phase 4)
 
 ---
-*Next: Plan Phase 4 (Gallery Redesign)*
+*Next: Execute 04-02-PLAN.md*
