@@ -73,13 +73,33 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| — | — | — |
+| STRK-01 | Phase 6 | Pending |
+| STRK-02 | Phase 6 | Pending |
+| STRK-03 | Phase 6 | Pending |
+| STRK-04 | Phase 6 | Pending |
+| STRK-05 | Phase 5 | Pending |
+| WEEK-01 | Phase 7 | Pending |
+| WEEK-02 | Phase 7 | Pending |
+| WEEK-03 | Phase 7 | Pending |
+| MNTH-01 | Phase 7 | Pending |
+| MNTH-02 | Phase 7 | Pending |
+| MNTH-03 | Phase 7 | Pending |
+| MNTH-04 | Phase 7 | Pending |
+| YEAR-01 | Phase 7 | Pending |
+| YEAR-02 | Phase 7 | Pending |
+| YEAR-03 | Phase 7 | Pending |
+| GALR-01 | Phase 4 | Pending |
+| GALR-02 | Phase 4 | Pending |
+| GALR-03 | Phase 4 | Pending |
+| GALR-04 | Phase 4 | Pending |
+| GALR-05 | Phase 4 | Pending |
+| GALR-06 | Phase 4 | Pending |
 
 **Coverage:**
 - v1.2 requirements: 20 total
-- Mapped to phases: 0
-- Unmapped: 20 ⚠️
+- Mapped to phases: 20 ✓
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-02-13*
-*Last updated: 2026-02-13 after initial definition*
+*Last updated: 2026-02-13 after v1.2 roadmap created*
