@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-13)
 
 **Core value:** Studying flashcards progressively reveals a masterpiece — the puzzle is a daily visual reward that connects effort to beauty.
-**Current focus:** v1.2 Streak & Gallery Redesign - Phase 5 (Study Tracking) complete
+**Current focus:** v1.2 Streak & Gallery Redesign - Phase 6 (Streak Widget) in progress
 
 ## Current Position
 
-Phase: 5 of 7 (Study Tracking)
-Plan: 2 of 2 complete
+Phase: 6 of 7 (Streak Widget & Bottom Sheet)
+Plan: 1 of 1 complete
 Status: Phase complete
-Last activity: 2026-02-13 — Completed 05-02-PLAN.md
+Last activity: 2026-02-13 — Completed 06-01-PLAN.md
 
-Progress: [█████░░░░░] 71% (5/7 phases in progress)
+Progress: [██████░░░░] 86% (6/7 phases complete)
 
 ## Performance Metrics
 
@@ -32,7 +32,7 @@ Progress: [█████░░░░░] 71% (5/7 phases in progress)
 |-------|--------------|-------|----------|-------|-------|
 | 4. Gallery Redesign | 6 (GALR) | 2/2 complete | 22m 19s | 5 | 7 |
 | 5. Study Tracking | 1 (STRK-05) | 2/2 complete | 19m 55s | 2 | 4 |
-| 6. Streak Widget | 4 (STRK) | TBD | - | - | - |
+| 6. Streak Widget | 4 (STRK) | 1/1 complete | 7m 23s | 2 | 8 |
 | 7. Heatmap Views | 10 (WEEK, MNTH, YEAR) | TBD | - | - | - |
 
 ## Accumulated Context
@@ -54,6 +54,9 @@ Recent decisions affecting v1.2:
 - Filter completed paintings at ViewModel level (single source of truth) (04-02)
 - [Phase 05-01]: Two-pass streak algorithm (backward to find extent, forward to accumulate grace)
 - [Phase 05-02]: Removed suspend from queryRevlog (withCol lambda is not suspend context)
+- [Phase 06-01]: Streak pill placed as left-most toolbar element (maximizes visibility per user spec)
+- [Phase 06-01]: Fire emoji in pill and bottom sheet (universal gamification symbol)
+- [Phase 06-01]: Grace days shown in bottom sheet stats row (transparency for streak resilience)
 
 ### Pending Todos
 
@@ -66,8 +69,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Completed 05-02-PLAN.md (ViewModel Integration)
-Resume: Phase 5 complete (2/2 plans). Ready for Phase 6 (Streak Widget).
+Stopped at: Completed 06-01-PLAN.md (Streak Widget & Bottom Sheet)
+Resume: Phase 6 complete (1/1 plans). Ready for Phase 7 (Heatmap Views).
 
 ---
-*Next: Plan and execute Phase 6 (Streak Widget)*
+*Next: Plan and execute Phase 7 (Heatmap Views)*
