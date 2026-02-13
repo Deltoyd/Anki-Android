@@ -127,6 +127,9 @@
             android:name=".ui.onboarding.TopicSelectionActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.onboarding.WelcomeActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.onboarding.ArtSelectionActivity"
             android:exported="false" />
         <activity

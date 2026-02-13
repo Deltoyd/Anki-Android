@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
+import com.ichi2.anki.MainContainerActivity
 import com.ichi2.anki.R
 import com.ichi2.anki.Reviewer
 import com.ichi2.anki.databinding.FragmentHomeBinding
@@ -33,6 +34,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupToolbar()
         setupGallery()
         setupObservers()
         setupButtons()
@@ -44,6 +46,19 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onResume()
         if (::galleryAdapter.isInitialized) {
             viewModel.refreshData(requireContext())
+        }
+    }
+
+    private fun setupToolbar() {
+        binding.homeToolbar.inflateMenu(R.menu.home_toolbar)
+        binding.homeToolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_sync -> {
+                    (activity as? MainContainerActivity)?.sync()
+                    true
+                }
+                else -> false
+            }
         }
     }
 
