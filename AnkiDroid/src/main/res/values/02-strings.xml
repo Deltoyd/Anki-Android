@@ -479,8 +479,14 @@ opening the system text to speech settings fails">Failed to open text to speech 
     <string name="streak_current_streak">Current Streak</string>
     <string name="streak_grace_days">Grace Days</string>
     <string name="streak_grace_days_format">%d remaining</string>
-    <string name="streak_time_hours_minutes">%dh %dm</string>
+    <string name="streak_time_hours_minutes">%1$dh %2$dm</string>
     <string name="streak_time_minutes">%dm</string>
     <string name="streak_time_seconds">%ds</string>
+
+    <!-- Heatmap tabs -->
+    <string name="heatmap_tab_week">Week</string>
+    <string name="heatmap_tab_month">Month</string>
+    <string name="heatmap_tab_year">Year</string>
+    <string name="heatmap_study_time_label">Study time: %s</string>
 </resources>
 

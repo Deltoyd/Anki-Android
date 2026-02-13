@@ -173,6 +173,15 @@
     <color name="museolingo_streak_accent">#D36B52</color>
     <color name="museolingo_streak_accent_light">#E8998A</color>
 
+    <!-- Heatmap intensity colors (#d36b52 family) -->
+    <color name="heatmap_intensity_none">#E8E8E8</color>
+    <color name="heatmap_intensity_1">#F5D6CF</color>
+    <color name="heatmap_intensity_2">#EBB8AD</color>
+    <color name="heatmap_intensity_3">#E19A8B</color>
+    <color name="heatmap_intensity_4">#D77C69</color>
+    <color name="heatmap_intensity_5">#D36B52</color>
+    <color name="heatmap_current_day_ring">#1A1410</color>
+
     <!-- Legacy IKASI colors (aliases for backwards compatibility) -->
     <color name="ikasi_bg">@color/museolingo_bg</color>
     <color name="ikasi_text">@color/museolingo_text</color>

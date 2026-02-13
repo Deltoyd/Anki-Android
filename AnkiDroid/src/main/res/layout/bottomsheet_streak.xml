@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -116,7 +117,127 @@
 
     </LinearLayout>
 
-    <!-- Placeholder for heatmap (Phase 7) -->
-    <!-- This space will hold the Week/Month/Year tabs in Phase 7 -->
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/museolingo_text_secondary"
+        android:alpha="0.2" />
+
+    <!-- Heatmap Tabs -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/heatmapTabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:tabMode="fixed"
+        app:tabGravity="fill"
+        app:tabIndicatorColor="@color/museolingo_streak_accent"
+        app:tabSelectedTextColor="@color/museolingo_streak_accent"
+        app:tabTextColor="@color/museolingo_text_secondary"
+        app:tabBackground="@android:color/transparent">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/heatmap_tab_week" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/heatmap_tab_month" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/heatmap_tab_year" />
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <!-- Heatmap ViewFlipper -->
+    <ViewFlipper
+        android:id="@+id/heatmapFlipper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp">
+
+        <!-- Week View -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <com.ichi2.anki.ui.museum.heatmap.WeekHeatmapView
+                android:id="@+id/weekHeatmap"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp" />
+
+            <TextView
+                android:id="@+id/weekStudyTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="14sp"
+                android:textColor="@color/museolingo_text_secondary" />
+
+        </LinearLayout>
+
+        <!-- Month View -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <com.ichi2.anki.ui.museum.heatmap.MonthHeatmapView
+                android:id="@+id/monthHeatmap"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp" />
+
+            <TextView
+                android:id="@+id/monthStudyTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="14sp"
+                android:textColor="@color/museolingo_text_secondary" />
+
+        </LinearLayout>
+
+        <!-- Year View -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+
+                <com.ichi2.anki.ui.museum.heatmap.YearHeatmapView
+                    android:id="@+id/yearHeatmap"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp" />
+
+            </HorizontalScrollView>
+
+            <TextView
+                android:id="@+id/yearStudyTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="14sp"
+                android:textColor="@color/museolingo_text_secondary" />
+
+        </LinearLayout>
+
+    </ViewFlipper>
 
 </LinearLayout>

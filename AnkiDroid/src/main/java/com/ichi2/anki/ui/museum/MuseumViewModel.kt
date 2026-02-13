@@ -54,6 +54,7 @@ class MuseumViewModel : ViewModel() {
                     todayStudyTimeMs = stats.todayStudyTimeMs,
                     todayCardsReviewed = stats.todayCardsReviewed,
                     totalStudyTimeMs = stats.totalStudyTimeMs,
+                    dailyStudyData = stats.dailyStudyData,
                     currentDeckName = currentDeckName,
                 )
             }
@@ -68,6 +69,7 @@ class MuseumViewModel : ViewModel() {
         val todayStudyTimeMs: Long,
         val todayCardsReviewed: Int,
         val totalStudyTimeMs: Long,
+        val dailyStudyData: Map<LocalDate, DailyStudyData>,
     )
 
     private suspend fun loadStudyStats(): StudyStats {
@@ -85,6 +87,7 @@ class MuseumViewModel : ViewModel() {
                 todayStudyTimeMs = todayData?.studyTimeMs ?: 0L,
                 todayCardsReviewed = todayData?.cardsReviewed ?: 0,
                 totalStudyTimeMs = totalTime,
+                dailyStudyData = dailyData,
             )
         }
     }
@@ -244,6 +247,7 @@ class MuseumViewModel : ViewModel() {
                     todayStudyTimeMs = stats.todayStudyTimeMs,
                     todayCardsReviewed = stats.todayCardsReviewed,
                     totalStudyTimeMs = stats.totalStudyTimeMs,
+                    dailyStudyData = stats.dailyStudyData,
                 )
             }
 
@@ -261,6 +265,7 @@ data class MuseumUiState(
     val todayStudyTimeMs: Long = 0,
     val todayCardsReviewed: Int = 0,
     val totalStudyTimeMs: Long = 0,
+    val dailyStudyData: Map<LocalDate, DailyStudyData> = emptyMap(),
     val progressText: String = "0 / 100 pieces",
     val currentDeckName: String = "Default",
     val galleryItems: List<GalleryArtItem> = emptyList(),
