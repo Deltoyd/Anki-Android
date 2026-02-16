@@ -51,8 +51,8 @@
 
             <com.ichi2.anki.ui.museum.PaintingPuzzleView
                 android:id="@+id/mini_puzzle_view"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
                 android:visibility="visible" />
 
             <ImageButton
