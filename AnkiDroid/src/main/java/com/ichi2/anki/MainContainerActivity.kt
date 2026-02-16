@@ -33,6 +33,10 @@ class MainContainerActivity :
     private var currentTabId: Int = R.id.nav_home
     private var syncOnResume = false
 
+    private val homeFragment by lazy { HomeFragment() }
+    private val libraryFragment by lazy { LibraryFragment() }
+    private var activeFragment: Fragment? = null
+
     private val loginForSyncLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == RESULT_OK) {
@@ -57,12 +61,26 @@ class MainContainerActivity :
         setupBackNavigation()
 
         if (savedInstanceState == null) {
-            showFragment(HomeFragment(), R.id.nav_home)
+            supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                add(R.id.fragmentContainer, homeFragment, "home")
+                add(R.id.fragmentContainer, libraryFragment, "library")
+                hide(libraryFragment)
+            }
+            activeFragment = homeFragment
+            currentTabId = R.id.nav_home
             if (intent.getBooleanExtra(INTENT_SYNC_FROM_LOGIN, false)) {
                 syncOnResume = true
             }
         } else {
             currentTabId = savedInstanceState.getInt("currentTabId", R.id.nav_home)
+            val restoredHome = supportFragmentManager.findFragmentByTag("home")
+            val restoredLibrary = supportFragmentManager.findFragmentByTag("library")
+            activeFragment =
+                when (currentTabId) {
+                    R.id.nav_library -> restoredLibrary
+                    else -> restoredHome
+                }
             binding.bottomNavigation.selectedItemId = currentTabId
         }
     }
@@ -165,8 +183,8 @@ class MainContainerActivity :
             }
 
             when (item.itemId) {
-                R.id.nav_home -> showFragment(HomeFragment(), item.itemId)
-                R.id.nav_library -> showFragment(LibraryFragment(), item.itemId)
+                R.id.nav_home -> switchToFragment(homeFragment, R.id.nav_home)
+                R.id.nav_library -> switchToFragment(libraryFragment, R.id.nav_library)
                 R.id.nav_settings -> {
                     startActivity(PreferencesActivity.getIntent(this))
                     return@setOnItemSelectedListener false
@@ -193,15 +211,17 @@ class MainContainerActivity :
         )
     }
 
-    private fun showFragment(
-        fragment: Fragment,
+    private fun switchToFragment(
+        target: Fragment,
         tabId: Int,
     ) {
         currentTabId = tabId
         supportFragmentManager.commit {
             setReorderingAllowed(true)
-            replace(R.id.fragmentContainer, fragment)
+            activeFragment?.let { hide(it) }
+            show(target)
         }
+        activeFragment = target
     }
 
     companion object {
