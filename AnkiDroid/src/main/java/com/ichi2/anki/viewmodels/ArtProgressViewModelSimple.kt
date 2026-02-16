@@ -202,6 +202,10 @@ class ArtProgressViewModelSimple(
         }
     }
 
+    suspend fun reloadProgress() {
+        loadCurrentProgress()
+    }
+
     suspend fun getAvailableArtPieces(): List<ArtPiece> =
         withContext(Dispatchers.IO) {
             repository.getAvailableArtPieces().ifEmpty {

@@ -39,18 +39,31 @@
             android:layout_centerHorizontal="true"
             android:layout_above="@+id/bottom_area_layout"/>
 
-        <!-- Art Preview Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/art_preview_button"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+        <!-- Inline Mini Puzzle -->
+        <FrameLayout
+            android:id="@+id/art_mini_container"
             android:layout_width="wrap_content"
-            android:layout_height="36dp"
+            android:layout_height="wrap_content"
             android:layout_above="@+id/bottom_area_layout"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="4dp"
-            android:text="@string/art_preview_button"
-            android:textSize="12sp" />
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="4dp">
+
+            <com.ichi2.anki.ui.museum.PaintingPuzzleView
+                android:id="@+id/mini_puzzle_view"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:visibility="visible" />
+
+            <ImageButton
+                android:id="@+id/mini_puzzle_icon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@drawable/ic_change_masterpiece"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Show puzzle"
+                android:visibility="gone" />
+        </FrameLayout>
 
         <include layout="@layout/reviewer_answer_buttons"
             tools:layout_width="match_parent"

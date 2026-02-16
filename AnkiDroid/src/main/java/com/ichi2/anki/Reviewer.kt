@@ -25,6 +25,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -39,6 +40,7 @@ import android.view.MotionEvent
 import android.view.SubMenu
 import android.view.View
 import android.webkit.WebView
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
@@ -123,6 +125,7 @@ import com.ichi2.anki.snackbar.showSnackbar
 import com.ichi2.anki.ui.internationalization.toSentenceCase
 import com.ichi2.anki.ui.museum.CasinoRewardEngine
 import com.ichi2.anki.ui.museum.MuseumPersistence
+import com.ichi2.anki.ui.museum.PaintingPuzzleView
 import com.ichi2.anki.ui.museum.RewardOverlayView
 import com.ichi2.anki.ui.windows.reviewer.ReviewerFragment
 import com.ichi2.anki.utils.ext.cardStatsNoCardClean
@@ -248,6 +251,9 @@ open class Reviewer :
     private val artProgressViewModel: ArtProgressViewModelSimple by viewModels {
         ArtProgressViewModelSimpleFactory(this)
     }
+    private var miniPuzzleView: PaintingPuzzleView? = null
+    private var miniPuzzleIcon: ImageButton? = null
+    private var cachedArtBitmap: Bitmap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (showedActivityFailedScreen(savedInstanceState)) {
@@ -270,8 +276,16 @@ open class Reviewer :
 
         // Initialize art progress system
         observeArtProgress()
-        findViewById<com.google.android.material.button.MaterialButton>(R.id.art_preview_button)
-            ?.setOnClickListener { showArtPreviewDialog() }
+        miniPuzzleView = findViewById(R.id.mini_puzzle_view)
+        miniPuzzleIcon = findViewById(R.id.mini_puzzle_icon)
+        miniPuzzleView?.setOnClickListener {
+            miniPuzzleView?.visibility = View.GONE
+            miniPuzzleIcon?.visibility = View.VISIBLE
+        }
+        miniPuzzleIcon?.setOnClickListener {
+            miniPuzzleIcon?.visibility = View.GONE
+            miniPuzzleView?.visibility = View.VISIBLE
+        }
         if (sharedPrefs().getString("answerButtonPosition", "bottom") == "bottom" && !navBarNeedsScrim) {
             setNavigationBarColor(R.attr.showAnswerColor)
         }
@@ -1279,7 +1293,19 @@ open class Reviewer :
         unlockRandomPuzzlePiece()
 
         // Reveal next art puzzle piece
+        val previousIndices =
+            artProgressViewModel.currentProgress.value
+                ?.revealedIndices
+                ?.toSet() ?: emptySet()
         artProgressViewModel.revealNextPiece()
+        val currentIndices =
+            artProgressViewModel.currentProgress.value
+                ?.revealedIndices
+                ?.toSet() ?: emptySet()
+        val newPiece = (currentIndices - previousIndices).firstOrNull()
+        if (newPiece != null) {
+            miniPuzzleView?.animateUnlock(newPiece)
+        }
 
         // showing the timebox reached dialog if the timebox is reached
         val timebox = withCol { timeboxReached() }
@@ -1927,9 +1953,12 @@ open class Reviewer :
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 artProgressViewModel.currentProgress.collect { state ->
-                    // If no active progress, auto-load the piece selected during onboarding
                     if (state == null) {
                         autoLoadSelectedArtPiece()
+                    } else {
+                        // Update mini puzzle with current progress
+                        miniPuzzleView?.setUnlockedPieces(state.revealedIndices.toSet())
+                        state.imageFilePath?.let { loadMiniPuzzleBitmap(it) }
                     }
                 }
             }
@@ -1956,12 +1985,38 @@ open class Reviewer :
     private fun autoLoadSelectedArtPiece() {
         val activeArtId = MuseumPersistence.getActiveArtPieceId(this) ?: return
         lifecycleScope.launch {
+            // Check if progress already exists in repository before creating new blank progress
+            val repository =
+                com.ichi2.anki.services
+                    .ArtProgressRepository(this@Reviewer)
+            val existingProgress = repository.getCurrentProgress()
+            if (existingProgress != null) {
+                artProgressViewModel.reloadProgress()
+                return@launch
+            }
             val allPieces = artProgressViewModel.getAvailableArtPieces()
             val selected =
                 allPieces.firstOrNull { it.id == activeArtId }
                     ?: allPieces.firstOrNull()
                     ?: return@launch
             artProgressViewModel.selectArtPiece(selected)
+        }
+    }
+
+    /**
+     * Load and cache the painting bitmap for the mini puzzle view.
+     */
+    private fun loadMiniPuzzleBitmap(imageFilePath: String) {
+        if (cachedArtBitmap != null) {
+            return
+        }
+        lifecycleScope.launch {
+            val artService = ArtAssetService(this@Reviewer)
+            val bitmap = withContext(Dispatchers.IO) { artService.loadArtBitmap(imageFilePath) }
+            if (bitmap != null) {
+                cachedArtBitmap = bitmap
+                miniPuzzleView?.setPainting(bitmap)
+            }
         }
     }
 
