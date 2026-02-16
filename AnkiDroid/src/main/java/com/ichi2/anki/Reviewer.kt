@@ -252,6 +252,7 @@ open class Reviewer :
         ArtProgressViewModelSimpleFactory(this)
     }
     private var miniPuzzleView: PaintingPuzzleView? = null
+    private var miniPuzzleCard: View? = null
     private var miniPuzzleIcon: ImageButton? = null
     private var cachedArtBitmap: Bitmap? = null
 
@@ -277,14 +278,15 @@ open class Reviewer :
         // Initialize art progress system
         observeArtProgress()
         miniPuzzleView = findViewById(R.id.mini_puzzle_view)
+        miniPuzzleCard = findViewById(R.id.mini_puzzle_card)
         miniPuzzleIcon = findViewById(R.id.mini_puzzle_icon)
-        miniPuzzleView?.setOnClickListener {
-            miniPuzzleView?.visibility = View.GONE
+        miniPuzzleCard?.setOnClickListener {
+            miniPuzzleCard?.visibility = View.GONE
             miniPuzzleIcon?.visibility = View.VISIBLE
         }
         miniPuzzleIcon?.setOnClickListener {
             miniPuzzleIcon?.visibility = View.GONE
-            miniPuzzleView?.visibility = View.VISIBLE
+            miniPuzzleCard?.visibility = View.VISIBLE
         }
         if (sharedPrefs().getString("answerButtonPosition", "bottom") == "bottom" && !navBarNeedsScrim) {
             setNavigationBarColor(R.attr.showAnswerColor)

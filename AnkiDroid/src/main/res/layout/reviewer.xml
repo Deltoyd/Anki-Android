@@ -49,17 +49,26 @@
             android:layout_marginEnd="12dp"
             android:layout_marginBottom="4dp">
 
-            <com.ichi2.anki.ui.museum.PaintingPuzzleView
-                android:id="@+id/mini_puzzle_view"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/mini_puzzle_card"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
-                android:visibility="visible" />
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@android:color/white"
+                xmlns:app="http://schemas.android.com/apk/res-auto">
+
+                <com.ichi2.anki.ui.museum.PaintingPuzzleView
+                    android:id="@+id/mini_puzzle_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </com.google.android.material.card.MaterialCardView>
 
             <ImageButton
                 android:id="@+id/mini_puzzle_icon"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:src="@drawable/ic_change_masterpiece"
+                android:layout_width="43dp"
+                android:layout_height="43dp"
+                android:src="@drawable/ic_mini_puzzle_collapsed"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Show puzzle"
                 android:visibility="gone" />
