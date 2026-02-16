@@ -24,7 +24,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private val viewModel: MuseumViewModel by activityViewModels()
     private lateinit var galleryAdapter: GalleryPagerAdapter
 
-    private var hasPlayedBreakAnimation = false
     private var hasSetInitialPage = false
 
     override fun onViewCreated(
@@ -77,11 +76,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
                     state.painting?.let { painting ->
                         galleryAdapter.updateActivePainting(painting)
-
-                        if (!hasPlayedBreakAnimation) {
-                            hasPlayedBreakAnimation = true
-                            binding.puzzleBreakOverlay.startAnimation(painting) {}
-                        }
                     }
 
                     if (!hasSetInitialPage && state.galleryItems.isNotEmpty()) {

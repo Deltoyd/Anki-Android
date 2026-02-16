@@ -22,9 +22,6 @@ class MuseumActivity : AnkiActivity() {
     private val viewModel: MuseumViewModel by viewModels()
     private lateinit var galleryAdapter: GalleryPagerAdapter
 
-    /** Ensures the cinematic break animation plays only once per activity creation. */
-    private var hasPlayedBreakAnimation = false
-
     /** Flag to ensure initial page is set only once. */
     private var hasSetInitialPage = false
 
@@ -91,14 +88,6 @@ class MuseumActivity : AnkiActivity() {
                     // Update painting for active item
                     state.painting?.let { painting ->
                         galleryAdapter.updateActivePainting(painting)
-
-                        // Play the cinematic puzzle break animation once
-                        if (!hasPlayedBreakAnimation) {
-                            hasPlayedBreakAnimation = true
-                            binding.puzzleBreakOverlay.startAnimation(painting) {
-                                // Animation complete — gallery is now visible underneath
-                            }
-                        }
                     }
 
                     // Set initial page once (at center of virtual range, on active painting)

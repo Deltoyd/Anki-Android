@@ -63,17 +63,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
 
-                <!-- Cinematic puzzle break overlay -->
-                <com.ichi2.anki.ui.museum.PuzzleBreakAnimationView
-                    android:id="@+id/puzzleBreakOverlay"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:visibility="gone"
-                    app:layout_constraintTop_toTopOf="@id/galleryPager"
-                    app:layout_constraintBottom_toBottomOf="@id/galleryPager"
-                    app:layout_constraintStart_toStartOf="@id/galleryPager"
-                    app:layout_constraintEnd_toEndOf="@id/galleryPager" />
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- Peek & Change Masterpiece buttons -->
