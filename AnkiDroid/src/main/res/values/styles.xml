@@ -142,7 +142,7 @@
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.BottomNavigationView</item>
     </style>
     <style name="ThemeOverlay.App.BottomNavigationView" parent="">
-        <item name="colorSecondaryContainer">?attr/tabLayoutBackgroundColor</item> <!-- Selected item indicator -->
+        <item name="colorSecondaryContainer">@android:color/transparent</item> <!-- Hide active tab indicator pill -->
         <item name="colorOnSecondaryContainer">?attr/tabActiveIconColor</item> <!-- Active icon -->
         <item name="colorOnSurface">?attr/colorPrimary</item> <!-- Active icon -->
         <item name="colorOnSurfaceVariant">?attr/colorPrimary</item> <!-- Inactive icon & label -->
