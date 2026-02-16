@@ -184,6 +184,7 @@ class MuseumViewModel : ViewModel() {
                         } else {
                             "0 / 100 pieces"
                         },
+                    completedCount = completedGallery.size,
                 )
             }
         }
@@ -271,6 +272,7 @@ data class MuseumUiState(
     val galleryItems: List<GalleryArtItem> = emptyList(),
     val activePageIndex: Int = 0,
     val currentArtTitle: String = "",
+    val completedCount: Int = 0,
 )
 
 sealed class MuseumEvent {

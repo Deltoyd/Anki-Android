@@ -523,6 +523,11 @@
             android:exported="false"
             android:configChanges="keyboardHidden|orientation|screenSize" />
 
+        <activity
+            android:name=".ui.museum.GalleryActivity"
+            android:exported="false"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+
         <activity android:name=".IntroductionActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.NoActionBar"

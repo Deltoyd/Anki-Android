@@ -32,6 +32,25 @@
             android:insetTop="0dp"
             android:insetBottom="0dp" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/galleryPill"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_marginStart="8dp"
+            android:text="🖼️ 0"
+            android:textSize="14sp"
+            android:textColor="@color/museolingo_streak_text"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            style="@style/Widget.Material3.Button.TonalButton"
+            app:backgroundTint="@color/museolingo_streak_pill_bg"
+            app:cornerRadius="18dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:visibility="gone" />
+
     </com.google.android.material.appbar.MaterialToolbar>
 
     <androidx.core.widget.NestedScrollView

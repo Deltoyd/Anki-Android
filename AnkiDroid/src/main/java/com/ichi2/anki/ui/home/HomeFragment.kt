@@ -11,6 +11,7 @@ import com.ichi2.anki.R
 import com.ichi2.anki.Reviewer
 import com.ichi2.anki.databinding.FragmentHomeBinding
 import com.ichi2.anki.services.ArtAssetService
+import com.ichi2.anki.ui.museum.GalleryActivity
 import com.ichi2.anki.ui.museum.GalleryPagerAdapter
 import com.ichi2.anki.ui.museum.MuseumEvent
 import com.ichi2.anki.ui.museum.MuseumViewModel
@@ -92,6 +93,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 }
 
                 binding.streakPill.text = getString(R.string.streak_pill_format, state.streakDays)
+
+                if (state.completedCount > 0) {
+                    binding.galleryPill.visibility = View.VISIBLE
+                    binding.galleryPill.text = "🖼️ ${state.completedCount}"
+                } else {
+                    binding.galleryPill.visibility = View.GONE
+                }
             }
         }
 
@@ -120,6 +128,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         binding.changeMasterpieceButton.setOnClickListener {
             startActivity(Intent(requireContext(), ArtSelectionActivity::class.java))
+        }
+
+        binding.galleryPill.setOnClickListener {
+            startActivity(Intent(requireContext(), GalleryActivity::class.java))
         }
     }
 

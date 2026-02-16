@@ -27,4 +27,5 @@ data class ArtPiece(
     val isPublicDomain: Boolean = true,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
+    val description: String? = null,
 )

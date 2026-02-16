@@ -53,6 +53,7 @@ class ArtAssetService(
                         imageUrlPreview = "asset://art/${entry.filename}",
                         imageUrlOriginal = null,
                         isPublicDomain = true,
+                        description = entry.description,
                     )
                 }
             } catch (e: Exception) {
