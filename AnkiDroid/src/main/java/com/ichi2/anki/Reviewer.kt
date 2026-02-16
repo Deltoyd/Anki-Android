@@ -1369,8 +1369,7 @@ open class Reviewer :
         com.ichi2.anki.ui.museum.MuseumPersistence
             .addUnlockedPiece(this, randomPiece)
 
-        // Show feedback toast
-        showThemedToast(this, "Puzzle piece unlocked! ${unlocked.size + 1}/500", false)
+        // Piece unlocked silently — progress visible on mini puzzle
     }
 
     override fun displayCardQuestion() {
