@@ -17,6 +17,7 @@ import com.ichi2.anki.ui.museum.MuseumEvent
 import com.ichi2.anki.ui.museum.MuseumViewModel
 import com.ichi2.anki.ui.museum.StreakBottomSheet
 import com.ichi2.anki.ui.onboarding.ArtSelectionActivity
+import com.ichi2.anki.ui.widget.ShimmerDrawable
 import dev.androidbroadcast.vbpd.viewBinding
 import kotlinx.coroutines.launch
 
@@ -26,6 +27,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var galleryAdapter: GalleryPagerAdapter
 
     private var hasSetInitialPage = false
+    private var shimmerDrawable: ShimmerDrawable? = null
 
     override fun onViewCreated(
         view: View,
@@ -122,6 +124,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             startActivity(Intent(requireContext(), Reviewer::class.java))
         }
 
+        val cornerRadiusPx = 28 * resources.displayMetrics.density
+        shimmerDrawable =
+            ShimmerDrawable(cornerRadiusPx).also {
+                binding.reviewButton.foreground = it
+                it.start()
+            }
+
         binding.peekButton.setOnClickListener {
             showPeekPreview(binding.galleryPager.currentItem)
         }
@@ -133,6 +142,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding.galleryPill.setOnClickListener {
             startActivity(Intent(requireContext(), GalleryActivity::class.java))
         }
+    }
+
+    override fun onDestroyView() {
+        shimmerDrawable?.stop()
+        shimmerDrawable = null
+        super.onDestroyView()
     }
 
     private fun showPeekPreview(position: Int) {
