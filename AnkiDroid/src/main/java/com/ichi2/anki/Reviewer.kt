@@ -33,10 +33,12 @@ import android.os.Message
 import android.os.Parcelable
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
+import android.view.GestureDetector
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
+import android.view.ScaleGestureDetector
 import android.view.SubMenu
 import android.view.View
 import android.webkit.WebView
@@ -280,14 +282,7 @@ open class Reviewer :
         miniPuzzleView = findViewById(R.id.mini_puzzle_view)
         miniPuzzleCard = findViewById(R.id.mini_puzzle_card)
         miniPuzzleIcon = findViewById(R.id.mini_puzzle_icon)
-        miniPuzzleCard?.setOnClickListener {
-            miniPuzzleCard?.visibility = View.GONE
-            miniPuzzleIcon?.visibility = View.VISIBLE
-        }
-        miniPuzzleIcon?.setOnClickListener {
-            miniPuzzleIcon?.visibility = View.GONE
-            miniPuzzleCard?.visibility = View.VISIBLE
-        }
+        setupMiniPuzzleDragAndZoom()
         if (sharedPrefs().getString("answerButtonPosition", "bottom") == "bottom" && !navBarNeedsScrim) {
             setNavigationBarColor(R.attr.showAnswerColor)
         }
@@ -1337,6 +1332,125 @@ open class Reviewer :
                 setOnCancelListener {
                     coroutines.resume(Unit)
                 }
+            }
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setupMiniPuzzleDragAndZoom() {
+        val container = findViewById<View>(R.id.art_mini_container) ?: return
+        val card = miniPuzzleCard ?: return
+
+        var isDragging = false
+        var wasScaling = false
+        var needsAnchorReset = false
+        var startX = 0f
+        var startY = 0f
+        var startTranslationX = 0f
+        var startTranslationY = 0f
+        val dragThreshold = 10f * resources.displayMetrics.density
+        val defaultScale = 1f
+        val zoomedScale = 2.5f
+
+        val scaleDetector =
+            ScaleGestureDetector(
+                this,
+                object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+                    override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
+                        wasScaling = true
+                        return true
+                    }
+
+                    override fun onScale(detector: ScaleGestureDetector): Boolean {
+                        val newScale = (container.scaleX * detector.scaleFactor).coerceIn(0.5f, 4f)
+                        container.scaleX = newScale
+                        container.scaleY = newScale
+                        return true
+                    }
+
+                    override fun onScaleEnd(detector: ScaleGestureDetector) {
+                        needsAnchorReset = true
+                    }
+                },
+            )
+
+        val gestureDetector =
+            GestureDetector(
+                this,
+                object : GestureDetector.SimpleOnGestureListener() {
+                    override fun onDoubleTap(e: MotionEvent): Boolean {
+                        val isZoomedIn = container.scaleX > defaultScale + 0.1f
+                        val targetScale = if (isZoomedIn) defaultScale else zoomedScale
+                        container
+                            .animate()
+                            .scaleX(targetScale)
+                            .scaleY(targetScale)
+                            .setDuration(200)
+                            .start()
+                        return true
+                    }
+                },
+            )
+
+        // Disable the span-slop so scaling starts immediately (no jitter from threshold)
+        try {
+            val field = ScaleGestureDetector::class.java.getDeclaredField("mSpanSlop")
+            field.isAccessible = true
+            field.set(scaleDetector, 0)
+        } catch (_: Exception) {
+        }
+
+        container.setOnTouchListener { _, event ->
+            scaleDetector.onTouchEvent(event)
+            gestureDetector.onTouchEvent(event)
+
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    isDragging = false
+                    wasScaling = false
+                    needsAnchorReset = false
+                    startX = event.rawX
+                    startY = event.rawY
+                    startTranslationX = container.translationX
+                    startTranslationY = container.translationY
+                    true
+                }
+                MotionEvent.ACTION_POINTER_DOWN -> {
+                    isDragging = false
+                    true
+                }
+                MotionEvent.ACTION_POINTER_UP -> {
+                    needsAnchorReset = true
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    if (event.pointerCount == 1 && !scaleDetector.isInProgress) {
+                        if (needsAnchorReset) {
+                            startX = event.rawX
+                            startY = event.rawY
+                            startTranslationX = container.translationX
+                            startTranslationY = container.translationY
+                            needsAnchorReset = false
+                        }
+                        val dx = event.rawX - startX
+                        val dy = event.rawY - startY
+                        if (!isDragging && Math.sqrt((dx * dx + dy * dy).toDouble()) > dragThreshold) {
+                            isDragging = true
+                        }
+                        if (isDragging) {
+                            container.translationX = startTranslationX + dx
+                            container.translationY = startTranslationY + dy
+                        }
+                    }
+                    true
+                }
+                MotionEvent.ACTION_UP -> {
+                    isDragging = false
+                    wasScaling = false
+                    needsAnchorReset = false
+                    true
+                }
+                else -> true
             }
         }
     }

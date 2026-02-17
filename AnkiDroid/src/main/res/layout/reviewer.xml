@@ -5,13 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusableInTouchMode="true"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <!-- Bring in each component from separate files as we have fullscreen versions of reviewer -->
     <RelativeLayout
         android:id="@+id/front_frame"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false">
         <include layout="@layout/toolbar"/>
 
         <include
@@ -47,7 +51,10 @@
             android:layout_above="@+id/bottom_area_layout"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="12dp"
-            android:layout_marginBottom="4dp">
+            android:layout_marginBottom="4dp"
+            android:padding="24dp"
+            android:clipChildren="false"
+            android:clipToPadding="false">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/mini_puzzle_card"
